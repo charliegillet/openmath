@@ -1,0 +1,6 @@
+name = "openmath"
+version = "0.1.0"
+defaultTargets = ["OpenMath"]
+
+[[lean_lib]]
+name = "OpenMath"
