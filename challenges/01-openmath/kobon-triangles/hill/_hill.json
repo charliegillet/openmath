@@ -1,0 +1,204 @@
+{
+  "hill": {
+    "name": "kobon-triangles",
+    "slug": "alejandrozu/kobon-triangles",
+    "description": "Arrange a fixed number of straight lines to maximize the number of bounded triangular faces in the Kobon triangle problem.",
+    "tags": [],
+    "visibility": "public",
+    "owner_username": "alejandrozu",
+    "current_tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707"
+  },
+  "describe": {
+    "hill": "kobon-triangles",
+    "version": "0.1.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/alejandrozu/kobon-triangles",
+    "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+    "commit": "17737195485728d244b0d1f30db55db42df60366",
+    "committed": true,
+    "watchdog_timeout_s": 120,
+    "exclusive_device": null,
+    "params": {
+      "n": {
+        "type": "int",
+        "default": 18,
+        "min": 3,
+        "max": 100,
+        "help": "Required number of distinct straight lines; different n values are ranked separately."
+      }
+    },
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H kobon-triangles --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/solution.json",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "uv.lock"
+    ],
+    "readme": "Arrange a fixed number of straight lines to maximize the number of bounded triangular faces in the Kobon triangle problem.\n\n# Kobon triangles\n\nConstruct an arrangement of exactly `n` distinct straight lines in the Euclidean\nplane. The evaluator counts its bounded triangular faces: nonzero-area triangles\nwhose interiors are not crossed by any line in the arrangement. Sharing vertices\nis allowed. A larger triangle subdivided by another line does not count.\n\nThis is a construction task. A higher count is better; it does not establish an\nupper bound or prove optimality. Submit an actual geometric arrangement, rather\nthan a claimed triangle count or an abstract pseudoline arrangement.\n\n## Submission\n\nPlace a UTF-8 `solution.json` in the submission directory. Its only field is\n`lines`, a list of triples `[a, b, c]` defining `a*x + b*y + c = 0`.\n\nFor example, this three-line submission has one triangular face when `n=3`:\n\n```json\n{\"lines\": [[1, 0, 0], [0, 1, 0], [1, 1, -1]]}\n```\n\n- There must be exactly `n` triples, each containing three JSON integers.\n- Each coefficient must have absolute value at most `10^30`.\n- At least one of `a` and `b` must be nonzero.\n- Proportional triples represent the same line and are rejected as duplicates.\n- Parallel lines and intersections of three or more lines are allowed.\n- The file must be at most 65,536 bytes and must not be a symlink.\n- Floats, booleans, NaN, infinity, duplicate JSON keys, and extra fields are invalid.\n\nIntegers specify rational lines exactly; rational coefficients can be converted\nto integers by clearing denominators, provided they meet the coefficient bound.\nThere is no bounding box, minimum triangle area, or geometric tolerance. All\nintersections and ordering comparisons use exact arithmetic.\n\nThe evaluator reads only this data file. It never executes submitted programs,\nimports submission modules, or trusts a score supplied by the submission.\n\n## Metric and parameters\n\n| Name | Meaning | Direction / default |\n| --- | --- | --- |\n| `triangles` | Verified number of bounded triangular faces | Maximize |\n| `n` | Required number of distinct lines, from 3 through 100 | Default: 18 |\n\n`n` is a primary comparison setting: a score for 18 lines is compared with other\n18-line scores, not with a score for another line count. The geometric rule and\nexact arithmetic are also fixed comparison settings. Invalid submissions return\n`passed: false` with a reason and receive no valid score.\n\nThe output includes the zero-based indices of the three supporting lines for each\ncounted triangle, so results can be inspected and plotted independently.\n\nThe watchdog is 120 seconds to protect the evaluator from hangs. Search runtime\nis not scored or limited by this hill: any construction method may be used to\nproduce the submission before evaluation.\n\n## Validation and private checks\n\nThis is a deterministic geometric optimization task, so there is no training\ndataset or hidden target arrangement. Both validation and final evaluation count\nthe same submitted arrangement with the same exact rule; `final=True` changes\nonly an informational report field.\n\n`private/validation.json` and `private/test.json` contain separate held-out\nregression fixtures for checking the evaluator, not data fed to a submitted\nsolver. They are loaded by the hill's tests and are excluded from public source\nby the hill packaging system. No answer from these fixtures is used as a\nsubmission's score. Public tests also compare the counting algorithm against an\nindependent exact triangle-interior intersection check.\n\n## Baseline and local verification\n\n`examples/baseline/solution.json` contains the 18 lines\n`2*i*x - y - i*i = 0`, for `i = 0, ..., 17`. It has 16 triangular faces.\nThis is a simple valid starting point, not a claimed best-known construction.\n\n```sh\nautolab hills check kobon-triangles\nuv tool run --from hills==0.11.0 hills eval <submission-directory> -H kobon-triangles\n```\n\nThe line count, input bounds, scoring rule, and evaluator are fixed for a given\nhill version. Improving a construction does not change those rules.\n\n",
+    "metrics": [
+      {
+        "name": "triangles",
+        "direction": "max"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+      "message": "first version",
+      "version": "0.1.0",
+      "commit": "17737195485728d244b0d1f30db55db42df60366",
+      "committed_at": "2026-09-18T18:23:08.209449+00:00",
+      "bundle_size": 20480
+    }
+  ],
+  "projects": [
+    {
+      "slug": "ashleychenyj/kobon-triangles-attempt-7",
+      "name": "Kobon Triangles attempt 7",
+      "owner_id": "user_3JbgGuCFVXqRc5ZEQPuau6nG5KZ",
+      "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+      "status": "running"
+    },
+    {
+      "slug": "fkaita/kobon-triangles-attempt-6",
+      "name": "Kobon Triangles attempt 6",
+      "owner_id": "user_3JbagJBTTZw8QwKjYN6G8GnpbHE",
+      "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+      "status": "running"
+    },
+    {
+      "slug": "fkaita/kobon-triangles-attempt-5",
+      "name": "Kobon Triangles attempt 5",
+      "owner_id": "user_3JbagJBTTZw8QwKjYN6G8GnpbHE",
+      "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+      "status": "blocked"
+    },
+    {
+      "slug": "fkaita/kobon-triangles-n18",
+      "name": "kobon-triangles-n18",
+      "owner_id": "user_3JbagJBTTZw8QwKjYN6G8GnpbHE",
+      "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+      "status": "paused"
+    },
+    {
+      "slug": "luizfelipebarbosa/kobon-triangles",
+      "name": "Kobon Triangles",
+      "owner_id": "user_3JbXRRUm3deuGOW0Max5kkHglgl",
+      "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+      "status": "needs_attention"
+    },
+    {
+      "slug": "claudioolmedo/kobon-82",
+      "name": "kobon-82",
+      "owner_id": "user_3JbVjcdFh1wlmhIv2dF07tXHJRp",
+      "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+      "status": "paused"
+    },
+    {
+      "slug": "ottogin/kobon-triangles-attempt-1",
+      "name": "Kobon Triangles attempt 1",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+      "status": "paused"
+    }
+  ],
+  "is_owner": false,
+  "star_count": 1,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "kobon-triangles-fork",
+  "version_tree_hash": "7d3f1d91dcb8be8d0eef20be763557bd6d876707",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/baseline/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: kobon-triangles\nversion: 0.1.0\nmetrics:\n  - {name: triangles, direction: max}\nwatchdog_timeout_s: 120\nparams:\n  n:\n    type: int\n    default: 18\n    min: 3\n    max: 100\n    help: \"Required number of distinct straight lines; different n values are ranked separately.\"\n\n",
+  "error": null,
+  "is_image": false
+}

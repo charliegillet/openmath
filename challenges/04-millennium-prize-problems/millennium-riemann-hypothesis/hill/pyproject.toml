@@ -1,0 +1,9 @@
+[project]
+name = "millennium-riemann-hypothesis"
+version = "0.1.0"
+description = "Evaluation environment for millennium-riemann-hypothesis"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8.0"]

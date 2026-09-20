@@ -1,0 +1,35 @@
+import FormalConjecturesUtil
+
+
+/-!
+# Erdős Problem 14
+
+*Reference:* [erdosproblems.com/14](https://www.erdosproblems.com/14)
+-/
+
+namespace Erdos14
+
+open Asymptotics Filter
+
+
+/--
+The number of integers in $\{1,\ldots,N\}$ which are not representable in exactly one way
+as the sum of two elements from $A$ (either because they are not representable at all, or
+because they are representable in more than one way).
+-/
+noncomputable def nonUniqueSumCount (A : Set ℕ) (N : ℕ) : ℝ :=
+  ((Set.Icc 1 N) \ (allUniqueSums A)).ncard
+
+noncomputable def almostSquareRoot (ε : ℝ) (N : ℕ) : ℝ :=
+  N ^ (1/2 - ε)
+
+noncomputable def squareRoot (N : ℕ) : ℝ :=
+  Real.sqrt N
+
+/--
+Let $A ⊆ \mathbb{N}$. Let $B ⊆ \mathbb{N}$ be the set of integers which are representable
+in exactly one way as the sum of two elements from $A$. Is it true that for all
+$\epsilon > 0$ and large $N$, $|\{1,\ldots,N\} \setminus B| \gg_\epsilon N^{1/2 - \epsilon}$?
+-/
+theorem hill :
+    answer(sorry) ↔ ∀ A, ∀ ε > 0, nonUniqueSumCount A ≫ almostSquareRoot ε :=

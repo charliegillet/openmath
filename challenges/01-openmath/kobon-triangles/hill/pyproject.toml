@@ -1,0 +1,9 @@
+[project]
+name = "kobon-triangles"
+version = "0.1.0"
+description = "Evaluation environment for kobon-triangles"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8.0"]

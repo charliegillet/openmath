@@ -50,3 +50,11 @@ lines have exactly 93 bounded triangular faces under AutoLab's face rule.
 For 18 lines, 93 is the current published lower bound and 94 is the known upper
 bound. This repository verifies the known 93-face construction; it does not
 claim a new record or prove optimality.
+
+## challenges/
+
+`challenges/` is an archive of 45 [AutoLab](https://app.autolab.ai) hills from four public lists, each in its own folder with the hill's own unmodified source under `hill/`, a plain-language README (what it is, what to prove, how to run) and — where solved — a verified `solution/`.
+
+The six curated hills from [`alejandrozu/openmath`](https://app.autolab.ai/lists/alejandrozu/openmath) live in `challenges/01-openmath/`. See `challenges/README.md` for the index.
+
+Hill sources are public and are re-fetched through the AutoLab REST API; the API key is read only from the `AUTOLAB_API_KEY` environment variable and is never stored in this repository.

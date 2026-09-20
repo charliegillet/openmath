@@ -1,0 +1,162 @@
+{
+  "hill": {
+    "name": "grothendieck-constant-witnesses",
+    "slug": "alejandrozu/grothendieck-constant-witnesses",
+    "description": "Find compact exact finite witnesses that improve a lower bound for the real Grothendieck constant.",
+    "tags": [],
+    "visibility": "public",
+    "owner_username": "alejandrozu",
+    "current_tree_hash": "14a20a4674b3262fd4b93e935da7f660afbd2c11"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "14a20a4674b3262fd4b93e935da7f660afbd2c11"
+  },
+  "describe": {
+    "hill": "grothendieck-constant-witnesses",
+    "version": "0.1.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/alejandrozu/grothendieck-constant-witnesses",
+    "tree_hash": "14a20a4674b3262fd4b93e935da7f660afbd2c11",
+    "commit": "ece3beae9d4a04cc5166503b312d6f8c7ba31050",
+    "committed": true,
+    "watchdog_timeout_s": 120,
+    "exclusive_device": null,
+    "params": {},
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H grothendieck-constant-witnesses --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/solution.json",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "uv.lock"
+    ],
+    "readme": "Find compact exact finite witnesses that improve a lower bound for the real Grothendieck constant.\n\n# Grothendieck constant witnesses\n\nThe real Grothendieck constant is the supremum of a vector relaxation over the\ncorresponding signed bilinear optimization. Its exact value is open. This hill\ndoes not ask for that value. It asks for a finite sign matrix together with\nrational unit vectors that give a large exact lower-bound witness.\n\nFor a submitted sign matrix `A`, the evaluator computes exactly\n\n```\nsign(A) = max_{x_i, y_j in {-1, 1}} sum_ij A_ij x_i y_j\n```\n\nand verifies the submitted rational unit vectors `u_i`, `v_j`. Their objective\n\n```\nvector(A; u, v) = sum_ij A_ij <u_i, v_j>\n```\n\ngives the certified finite lower bound `vector / sign <= K_G`. A high score is\na useful concrete witness, not a proof of the exact Grothendieck constant.\n\n## Submission format\n\nSubmit one directory containing exactly one regular UTF-8 JSON file:\n\n```text\nsolution.json\n```\n\nIt must contain exactly these fields:\n\n```json\n{\n  \"matrix\": [[1, 1], [1, -1]],\n  \"left_vectors\": [[[1, 1], [0, 1]], [[0, 1], [1, 1]]],\n  \"right_vectors\": [[[3, 5], [4, 5]], [[3, 5], [-4, 5]]]\n}\n```\n\n- `matrix` is an `m` by `n` rectangular list with `2 <= m,n <= 8`; every\n  entry is the integer `-1` or `1`.\n- `left_vectors` has `m` rows and `right_vectors` has `n` rows. Each vector\n  has one common dimension `d`, where `2 <= d <= 16`.\n- A coordinate is a canonical rational pair `[numerator, denominator]` with a\n  positive denominator, coprime integers, and absolute values at most `10^6`.\n- Every submitted vector must have squared Euclidean norm exactly one. The\n  evaluator uses `fractions.Fraction`; floating-point values are invalid.\n- The JSON file may not exceed 262,144 bytes. Submitted code is never run.\n\nThe example is a rational witness for the `2 x 2` CHSH sign matrix. It has\n`sign(A)=2` and vector objective `14/5`, yielding the lower bound `7/5`.\n\n## Metrics\n\n| metric | direction | meaning |\n| --- | --- | --- |\n| `gap_ppm` | max | `floor(1,000,000 * vector(A;u,v) / sign(A))`, a certified lower bound scaled by one million. |\n| `matrix_area` | min | `m * n`, preferring smaller witnesses when lower bounds tie. |\n| `certificate_bits` | min | Sum of numerator and denominator bit lengths in the rational vectors, preferring compact certificates. |\n\nReports rank lexicographically. The evaluator computes the sign optimum by\nexhaustive enumeration of one sign side and computes every rational dot product\nexactly. It ignores any claimed score in the submission because no such field\nis allowed.\n\n## Held-out evaluator checks\n\nThe candidate witness itself is an exact, deterministic mathematical object, so\nthere is no training corpus or hidden target matrix. `private/validation.json`\nand `private/test.json` instead contain disjoint rational witness fixtures used\nto guard the evaluator's exact arithmetic. Normal evaluation checks the\nvalidation fixture; `--final` checks the test fixture. These held-out fixtures\nare never exposed to the climbing agent and cannot improve the score directly.\n\n## What counts as progress\n\nA score above the baseline is a fully inspectable finite lower-bound witness\nfor the real Grothendieck constant. Researchers can reuse the matrix, rational\nvectors, sign optimum, and Gram structure in analytic or computational work.\n",
+    "metrics": [
+      {
+        "name": "gap_ppm",
+        "direction": "max"
+      },
+      {
+        "name": "matrix_area",
+        "direction": "min"
+      },
+      {
+        "name": "certificate_bits",
+        "direction": "min"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "14a20a4674b3262fd4b93e935da7f660afbd2c11",
+      "message": "first version",
+      "version": "0.1.0",
+      "commit": "ece3beae9d4a04cc5166503b312d6f8c7ba31050",
+      "committed_at": "2026-09-18T23:58:30.978896+00:00",
+      "bundle_size": 20480
+    }
+  ],
+  "projects": [
+    {
+      "slug": "ottogin/grothendieck-constant-witnesses-attempt-1",
+      "name": "Grothendieck Constant Witnesses attempt 1",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "14a20a4674b3262fd4b93e935da7f660afbd2c11",
+      "status": "paused"
+    }
+  ],
+  "is_owner": false,
+  "star_count": 1,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "grothendieck-constant-witnesses-fork",
+  "version_tree_hash": "14a20a4674b3262fd4b93e935da7f660afbd2c11",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/baseline/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: grothendieck-constant-witnesses\nversion: 0.1.0\nmetrics:\n  - {name: gap_ppm, direction: max}\n  - {name: matrix_area, direction: min}\n  - {name: certificate_bits, direction: min}\nwatchdog_timeout_s: 120\n",
+  "error": null,
+  "is_image": false
+}

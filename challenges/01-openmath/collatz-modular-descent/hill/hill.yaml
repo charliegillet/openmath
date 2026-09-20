@@ -1,0 +1,8 @@
+spec_version: 2
+name: collatz-modular-descent
+version: 0.1.0
+metrics:
+  - {name: coverage_ppm, direction: max}
+  - {name: min_descent_ppm, direction: max}
+  - {name: rule_count, direction: min}
+watchdog_timeout_s: 120

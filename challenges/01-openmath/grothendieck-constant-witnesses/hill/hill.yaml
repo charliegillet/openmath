@@ -1,0 +1,8 @@
+spec_version: 2
+name: grothendieck-constant-witnesses
+version: 0.1.0
+metrics:
+  - {name: gap_ppm, direction: max}
+  - {name: matrix_area, direction: min}
+  - {name: certificate_bits, direction: min}
+watchdog_timeout_s: 120

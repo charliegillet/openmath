@@ -1,0 +1,9 @@
+[project]
+name = "matrix-multiplication-tensor-3x3"
+version = "0.1.0"
+description = "Evaluation environment for matrix-multiplication-tensor-3x3"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8.0"]

@@ -1,0 +1,384 @@
+{
+  "hill": {
+    "name": "circle-packing",
+    "slug": "ottogin/circle-packing",
+    "description": "Fit 26 circles inside a square without overlap. Your score is the sum of their radii; higher is better. Start here to learn how a solution gets scored.",
+    "tags": [
+      "math",
+      "optimization",
+      "demo"
+    ],
+    "visibility": "public",
+    "owner_username": "ottogin",
+    "current_tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c"
+  },
+  "describe": {
+    "hill": "circle-packing",
+    "version": "0.1.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/ottogin/circle-packing",
+    "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+    "commit": "8a7eee58d34a28e5e6c984914546a531285f5f0d",
+    "committed": true,
+    "watchdog_timeout_s": 120,
+    "exclusive_device": null,
+    "params": {
+      "n": {
+        "type": "int",
+        "default": 26,
+        "min": 1,
+        "max": 500,
+        "help": "how many circles must be packed"
+      },
+      "tolerance": {
+        "type": "float",
+        "default": 1e-09,
+        "min": 0.0,
+        "max": 1e-06,
+        "help": "slack allowed on containment and overlap, applied exactly"
+      }
+    },
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H circle-packing --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "assets/hero.jpg",
+      "blobs.lock",
+      "eval.py",
+      "examples/grid/solution.json",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "uv.lock"
+    ],
+    "readme": "# Circle packing\n\nFit 26 circles inside a square without overlap. Your score is the sum of their radii; higher is better. Start here to learn how a solution gets scored.\n\n![An example packing of 26 circles in the unit square, sum of radii 2.6359](assets/hero.jpg)\n\n## Run the starter\n\nThe starter in `examples/grid/` contains 25 equal circles and one smaller circle\nin a gap. Its score is **2.5414** at the default settings. The picture above shows\na different arrangement, not the starter. Scoring is deterministic: **2.5414**\nis the actual starter score, not a rounded reference value.\n\n**On AutoLab:** Click **Start a climb**, then **Climb on AutoLab**. Choose an agent\nmodel and either a connected CPU machine or **CPU only (small)**. Set a model\nbudget under **More options**.\nAutoLab copies the starter into your climb. Check its baseline result before\nreviewing the agent's changes. You can pause the climb when you want to stop.\n\n**Locally:** Choose **Climb locally** and paste its setup prompt into your coding\nagent. Ask it to run the provided starter before changing it. Once the hill is\ndownloaded, you can also run the starter yourself from the project folder that\ncontains `.autolab/`:\n\n```sh\ncp -R .autolab/hills/circle-packing/examples/grid ./my-packing\nhills eval ./my-packing -H circle-packing -o baseline.json\n```\n\nUse a fresh `my-packing` folder. The report should say `passed: true` and show\n`sum_radii: 2.5414`. The evaluator needs Python 3.11 or newer and uses only the\nstandard library. No GPU or private dataset is required. Local results are not\nautomatically added to AutoLab's leaderboard.\n\n## Compute and cost\n\nThe agent model writes experiments; the compute runs them. The model budget covers model calls. Rented compute is billed separately. Pause the climb to stop experiments and release AutoLab rentals; your own connected machine remains yours to manage.\n\nBefore changing anything, open the baseline job and check for a passing score. **Nodes offline** means compute is disconnected, not that your solution failed.\n\n## Try a first change\n\nOn AutoLab, ask the agent to make this edit, then run one evaluation. For local work, edit your copied submission folder.\n\nOpen `my-packing/solution.json`. Each circle has a center (`x`, `y`) and a radius\n(`r`). Change the small circle at `(0.2, 0.2)` from `0.0414` to `0.04142`,\nleaving every other value unchanged. Then score your folder again:\n\n```sh\nhills eval ./my-packing -H circle-packing -o attempt-1.json\n```\n\nThis edit should pass with **2.54142**, an improvement of **0.00002**. Read the\nresult and compare it with your baseline before trying a larger change. If circles overlap,\nthe report lists the affected indices in `details.violations`; reduce the change\nand try again. Indices start at zero.\n\nAfter that, try a program that searches over positions and radii. Keep the hill's\nevaluator unchanged: your program produces the arrangement in `solution.json`,\nand the evaluator checks and scores it.\n\n## What to submit\n\nSubmit a directory containing `solution.json` with exactly 26 circles. This\nshortened example shows the format only; it has two circles and will not pass\nthe default count check:\n\n```json\n{\n  \"circles\": [\n    {\"x\": 0.1, \"y\": 0.1, \"r\": 0.1},\n    {\"x\": 0.3, \"y\": 0.1, \"r\": 0.1}\n  ]\n}\n```\n\nYou may change every circle's position and radius, and use any method to find\nthem. The evaluator reads the JSON, not the program that generated it.\n\n## How scoring works\n\nThe square is `[0, 1] \u00d7 [0, 1]`. Every radius must be positive, each circle must\nfit inside the square, and no pair may overlap. Touching is allowed.\n\nFor a valid arrangement, **`sum_radii` is the sum of all radii; higher is better**.\nThe evaluator calculates it itself. An invalid arrangement fails and reports up\nto five constraint violations.\n\nCoordinates are read as exact decimal values and checked using rational\narithmetic. To allow for optimizer rounding, containment accepts slack of\n`tolerance` in the coordinate inequalities, and non-overlap accepts that slack in\nthe squared-distance inequality:\n\n```text\nr > 0\nr - tolerance <= x, y <= 1 - r + tolerance\n(xi - xj)^2 + (yi - yj)^2 >= (ri + rj)^2 - tolerance\n```\n\nPositivity has no slack. Keep the default tolerance when comparing your attempts.\n\n## Other settings\n\n| Parameter | Default | Meaning |\n| --- | --- | --- |\n| `n` | 26 | Number of circles required |\n| `tolerance` | `1e-9` | Rounding slack in the constraints above |\n\nFor a different circle count, supply a matching arrangement and use, for example,\n`hills eval ./my-packing -H circle-packing -p n=32`. Results with different `n`\nor `tolerance` values belong to separate comparison groups.\n\n`--final` records a test-mode evaluation. There is no held-out data in this hill,\nso the same arrangement and settings give the same score. Validation and test\nreports are recorded separately. Keep the generated reports unedited;\n`hills verify` checks their signatures using the matching signing key.\n\n## If the first run fails\n\n- **Wrong circle count:** submit all 26 circles, not the shortened format example.\n- **Overlap or edge violation:** open `details.violations` and check those circle indices. Restore the starter if you need a known valid arrangement.\n- **File not found:** the folder you submit must contain `solution.json` directly.\n\nA valid result can still be worse than the baseline. Compare `sum_radii` at the same circle count and tolerance; higher is better.\n\n## Versions and comparisons\n\nA climb stays on the hill version selected when it was created. To try a newly published version, start a new climb from the hill page. Old results stay with their original version, including when a new version only changes this README.\n",
+    "metrics": [
+      {
+        "name": "sum_radii",
+        "direction": "max"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "message": "Clarify starter workflow, compute, scoring and troubleshooting",
+      "version": "0.1.0",
+      "commit": "8a7eee58d34a28e5e6c984914546a531285f5f0d",
+      "committed_at": "2026-09-10T05:36:37.496372+00:00",
+      "bundle_size": 71680
+    },
+    {
+      "tree_hash": "9c7db424748ad01826a6b7fb2b21b8fe36f85420",
+      "message": "Make the first circle-packing exercise explicit",
+      "version": "0.1.0",
+      "commit": "baac050627990ffd40a5df0a9814df58da603695",
+      "committed_at": "2026-09-10T00:58:33.328023+00:00",
+      "bundle_size": 71680
+    },
+    {
+      "tree_hash": "a84aa0c01740cc745510c186487193fab5f5c4ea",
+      "message": "swap the hero visualization for the 26-circle packing render",
+      "version": "0.1.0",
+      "commit": "ac601aadea3ad8bb8c8fc5725cb4aed2dbbd5aac",
+      "committed_at": "2026-09-06T03:59:58.701433+00:00",
+      "bundle_size": 71680
+    },
+    {
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "message": "circle packing with a hero image",
+      "version": "0.1.0",
+      "commit": "b9c6b5e95d2c6bb506ac18509f681c8190686e38",
+      "committed_at": "2026-09-04T23:25:06.017737+00:00",
+      "bundle_size": 20480
+    }
+  ],
+  "projects": [
+    {
+      "slug": "ashleychenyj/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbgGuCFVXqRc5ZEQPuau6nG5KZ",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "kparasha/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3Jbfkjg6ldjLgob8fFAvqvcMNkE",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "alexandra-sera-hsu/circle-packing",
+      "name": "circle-packing",
+      "owner_id": "user_3JbYzb1lU0jTJwd0CjT8ayrpkGT",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "running"
+    },
+    {
+      "slug": "fkaita/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbagJBTTZw8QwKjYN6G8GnpbHE",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "alexandra-sera-hsu/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbYzb1lU0jTJwd0CjT8ayrpkGT",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "vikas1188/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbYROIz8De3wccaCWaWcEHGrVb",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "connorbuchheit/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbXzmYZcQg5I1OTAIXMMdKXsN0",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "luizfelipebarbosa/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbXRRUm3deuGOW0Max5kkHglgl",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "yhinai/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbXC9w2z9LVEtCwstnCb1LboPS",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "claudioolmedo/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbVjcdFh1wlmhIv2dF07tXHJRp",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "1c1jp5dhwy/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbUxmuJ57YguNbuLCRcj7Jaai0",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "jacobwell/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbUvmj0x4yR66oewjO5iwyqofW",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "monaim1/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JbUmYeQ7rMGxvFKhdxjY4bfVZe",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "sergeicu/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3BpCnYHHcyuX7AYzsCduPpWZnTh",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "alejandrozu/example-climb-on-packing-circles",
+      "name": "Example climb on packing circles",
+      "owner_id": "user_3JVnVxZKi6Bl4mmI5D65h6sMvcC",
+      "tree_hash": "f9af3b927bcc948daf9e09fe75b661a6d673f7f2",
+      "status": "paused"
+    },
+    {
+      "slug": "malikzeeshan1122/circle-packing",
+      "name": "Circle Packing",
+      "owner_id": "user_3JRHfNe2zO4tqEdyT3S6E6y4i5X",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "blocked"
+    },
+    {
+      "slug": "ottogin/circle-packing-attempt-11",
+      "name": "Circle Packing attempt 11",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "paused"
+    },
+    {
+      "slug": "hamidrezakmk/circle-packing-attempt-10",
+      "name": "Circle Packing attempt 10",
+      "owner_id": "user_3Brf7FpktvGxrYtqxsxG7yPNyOP",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "paused"
+    },
+    {
+      "slug": "hamidrezakmk/circle-packing",
+      "name": "Circle Packing",
+      "owner_id": "user_3Brf7FpktvGxrYtqxsxG7yPNyOP",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "blocked"
+    },
+    {
+      "slug": "abansal132/circle-packing",
+      "name": "Circle Packing",
+      "owner_id": "user_3IFTSzACUtaF1YkqOwmghCFa82u",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "blocked"
+    },
+    {
+      "slug": "wilsonwu-ai/circle-packing",
+      "name": "Circle Packing",
+      "owner_id": "user_3JNJGV2444ITxY5KC28fPsvj6Vy",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "blocked"
+    },
+    {
+      "slug": "softchallenge2012/circle-packing",
+      "name": "Circle Packing",
+      "owner_id": "user_3JMkkXTzZD5kJZw15CiqF1nOnbY",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "blocked"
+    },
+    {
+      "slug": "mickdarling/circle-packing",
+      "name": "Circle Packing",
+      "owner_id": "user_3JMFCPXpXulNb9AO0RWP7soiNDd",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "blocked"
+    },
+    {
+      "slug": "ottogin/circle-packing-attempt-3",
+      "name": "Circle Packing attempt 3",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "paused"
+    },
+    {
+      "slug": "sundaiclub/circle-packing",
+      "name": "Circle Packing",
+      "owner_id": "user_3BvfVqOAn3WoVkJ2U5P4hDabHdm",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "blocked"
+    },
+    {
+      "slug": "ottogin/circle-packing-attempt-1",
+      "name": "Circle Packing attempt 1",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+      "status": "paused"
+    }
+  ],
+  "is_owner": false,
+  "star_count": 1,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "circle-packing-fork",
+  "version_tree_hash": "6c4fbda4f22e1f6b8f8aaf603deec6a96fcd8f3c",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "assets",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "hero.jpg",
+      "path": "assets/hero.jpg",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "grid",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/grid/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: circle-packing\nversion: 0.1.0\n\n# Reports lead with these, in ranking order.\nmetrics:\n  - {name: sum_radii, direction: max}\n\n# The evaluator is exact arithmetic over a few hundred pairs; this bound only\n# exists so a pathological submission cannot wedge an agent loop.\nwatchdog_timeout_s: 120\n\nparams:\n  n: {type: int, default: 26, min: 1, max: 500, help: \"how many circles must be packed\"}\n  tolerance:\n    type: float\n    default: 1.0e-9\n    min: 0.0\n    max: 1.0e-6\n    help: \"slack allowed on containment and overlap, applied exactly\"\n",
+  "error": null,
+  "is_image": false
+}

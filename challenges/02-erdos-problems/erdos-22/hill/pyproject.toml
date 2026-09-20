@@ -1,0 +1,9 @@
+[project]
+name = "erdos-22"
+version = "0.1.0"
+description = "Evaluation environment for erdos-22"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8.0"]

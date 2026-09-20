@@ -1,0 +1,11 @@
+{
+  "lock_version": 1,
+  "kind": "private",
+  "entries": [
+    {
+      "path": "private/seeds.json",
+      "sha256": "433ea302f2246896275311b1077f425041662082de3973dcd54677fc42fd4d77",
+      "size": 65
+    }
+  ]
+}

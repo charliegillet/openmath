@@ -1,0 +1,199 @@
+{
+  "hill": {
+    "name": "kernel-opt",
+    "slug": "ottogin/kernel-opt",
+    "description": "Make single-threaded matrix multiplication faster in C while keeping its answers correct. This hill measures CPU throughput in GFLOP/s; higher is better.",
+    "tags": [
+      "ml",
+      "systems",
+      "optimization",
+      "demo"
+    ],
+    "visibility": "public",
+    "owner_username": "ottogin",
+    "current_tree_hash": "76db49356748c18dccac376bed489268b047b60a"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "76db49356748c18dccac376bed489268b047b60a"
+  },
+  "describe": {
+    "hill": "kernel-opt",
+    "version": "0.1.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/ottogin/kernel-opt",
+    "tree_hash": "76db49356748c18dccac376bed489268b047b60a",
+    "commit": "34cf4e8f6319252dfb8c368ba7c918c00bdece87",
+    "committed": true,
+    "watchdog_timeout_s": 600,
+    "exclusive_device": "cpu",
+    "params": {
+      "n": {
+        "type": "int",
+        "default": 512,
+        "min": 128,
+        "max": 2048
+      },
+      "tolerance": {
+        "type": "float",
+        "default": 0.002,
+        "min": 0.0,
+        "max": 0.1
+      }
+    },
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H kernel-opt --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "assets/hero.svg",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/kernel.c",
+      "examples/baseline/solution.json",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "uv.lock"
+    ],
+    "readme": "# CPU kernel optimization\n\nMake single-threaded matrix multiplication faster in C while keeping its answers correct. This hill measures CPU throughput in GFLOP/s; higher is better.\n\n**First run:** choose **Climb on AutoLab**. The starter runs on CPU. Official scoring needs private evaluation data that is omitted from the public local download.\n\n![Blocked matrix multiply: the road from naive loops to cache-aware tiles](assets/hero.svg)\n\n## Run the starter\n\nThe starter in `examples/baseline/` is a straightforward three-loop matrix\nmultiply. Use its result on your own machine as the baseline. There is no single\nexpected speed for every CPU: five unchanged starter runs at `n=512` on the\nreview Mac ranged from **3.74 to 3.81 GFLOP/s**, with a median of about **3.75**.\nThat is a measurement example, not a target for another machine.\n\nOn AutoLab, click **Start a climb**, then **Climb on AutoLab**. Choose an agent\nmodel and either a connected CPU machine or **CPU only (small)**. Set a model\nbudget under **More options**. AutoLab copies `kernel.c` into the climb. Check\nthat its baseline passes before reviewing changes; pause when you want to stop.\n\nThe evaluator needs Python 3.11 or newer, NumPy, and a C compiler available as\n`cc`. Its environment installs NumPy; the machine must already have the compiler.\nThe starter is intended for Linux or macOS with GCC or Clang. No GPU is needed.\n`cc --version` checks whether the compiler is available.\n\n## Compute and cost\n\nThe agent model writes experiments; the compute runs them. The model budget covers model calls. Rented compute is billed separately. Pause the climb to stop experiments and release AutoLab rentals; your own connected machine remains yours to manage.\n\nBefore changing anything, open the baseline job and check for a passing score. **Nodes offline** means compute is disconnected, not that your solution failed.\n\n## Try a first change\n\nOn AutoLab, ask the agent to make this edit in your submission, then run one evaluation against the baseline.\n\nThe starter loops over `i`, then `j`, then `k`. Try `i`, then `k`, then `j`, so\nthe innermost loop walks contiguous rows of B and C. Initialize each output row\nbefore accumulating into it:\n\n```c\nvoid gemm(int n, const float *A, const float *B, float *C) {\n    for (int i = 0; i < n; i++) {\n        for (int j = 0; j < n; j++) C[i * n + j] = 0.0f;\n        for (int k = 0; k < n; k++) {\n            float a = A[i * n + k];\n            for (int j = 0; j < n; j++)\n                C[i * n + j] += a * B[k * n + j];\n        }\n    }\n}\n```\n\nEvaluate with the same size, tolerance and machine. Check correctness first,\nthen compare throughput and the three durations in `details.timings_seconds`.\nRepeat close results: a small change within timing variation is not convincing\nprogress. After loop order, try blocking, vectorization or unrolling.\n\n## What to submit\n\nSubmit a directory containing a self-contained `kernel.c` with this function:\n\n```c\nvoid gemm(int n, const float *A, const float *B, float *C);\n```\n\nCompute `C = A @ B` for row-major `n x n` float32 matrices. You may change the\nalgorithm and C implementation. Use one thread, no external libraries, and no\nBLAS calls. Keep the evaluator, correctness inputs and compiler flags unchanged.\n\n## Scoring and timing\n\nThe compiler command uses `cc -O3 -march=native -ffast-math -shared -fPIC`, with\n`-lm` linked. Correctness is checked against NumPy on private seeded inputs,\nincluding fresh inputs for every timed repetition. A no-op at the timed size\nor a cached answer from warmup does not pass those checks.\n\nAfter warmup, the evaluator times three calls at `n=512`. Each timed call\nincludes output allocation and zeroing plus the Python/ctypes call overhead;\ninput generation and NumPy verification are outside the timed section.\n\n**`gflops = 2 * n^3 / seconds_best_of_3 / 1e9`.** The score keeps the existing\nbest-of-three convention. The report also includes all three durations, compiler\nversion and flags, operating system and architecture so you can inspect the\nmeasurement. These details do not make different machines comparable.\n\nA failed result explains a compilation or correctness problem in `details.error`.\nFix it before comparing speed. Correctness errors identify the case or timed\nrepetition without revealing the private seed.\n\n## Local work\n\nThe public download does not include the private seeds needed for official\nscoring. You can write and compile the kernel locally, but **use AutoLab for\nscored runs with the public version**. A separate public practice evaluation is\nnot provided yet.\n\nWith an authorized complete hill bundle, run from the folder containing\n`.autolab/`, using a fresh `my-kernel` folder:\n\n```sh\ncp -R .autolab/hills/kernel-opt/examples/baseline ./my-kernel\nhills eval ./my-kernel -H kernel-opt -o baseline.json\n```\n\nLocal results are not automatically added to AutoLab's leaderboard.\n\n## Other settings\n\n| Parameter | Default | Meaning |\n| --- | --- | --- |\n| `n` | 512 | Timed square matrix size |\n| `tolerance` | `2e-3` | Maximum relative error against the NumPy result |\n\nThe relative error is the largest absolute output error divided by the largest\nabsolute reference value, with `1e-9` added to the denominator. Results compare\nonly within the same machine name, size, tolerance and evaluation mode. Keep\nother workloads off the CPU when measuring. Evaluation runs are serialized on\nthe machine by this hill's CPU exclusivity setting.\n\n`--final` uses a separate private correctness seed set and records a separate\ncomparison group. Keep reports unedited; `hills verify` checks their signatures\nwith the matching signing key.\n\n## Trust\n\nThis is a cooperative performance exercise. Do not read private seeds, cache\nanswers across calls, or bypass the one-thread rule. Correctness checks are not\na sandbox: submission code and evaluation currently run as the same\noperating-system user on AutoLab.\n\n## If the first run fails\n\n- **Compiler missing:** run `cc --version` on the machine doing the evaluation. Choose a CPU machine with GCC or Clang installed.\n- **Compilation error:** open the failed job's logs and check the first compiler error and the required `gemm` signature.\n- **Incorrect answer:** check that every output entry is initialized and that rows use `i * n + j` indexing.\n- **Missing private inputs locally:** use **Climb on AutoLab** for official scoring. The public download supports editing and compilation only.\n\nRun the baseline on the machine you will optimize on. A faster CPU alone is not evidence that your code improved. This hill runs C on a CPU; CUDA kernels belong in a separate GPU benchmark.\n\n## Versions and comparisons\n\nA climb stays on the hill version selected when it was created. To try a newly published version, start a new climb from the hill page. Old results stay with their original version, including when a new version only changes this README.\n",
+    "metrics": [
+      {
+        "name": "gflops",
+        "direction": "max"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "76db49356748c18dccac376bed489268b047b60a",
+      "message": "Clarify starter workflow, compute, scoring and troubleshooting",
+      "version": "0.1.0",
+      "commit": "34cf4e8f6319252dfb8c368ba7c918c00bdece87",
+      "committed_at": "2026-09-10T05:36:42.649941+00:00",
+      "bundle_size": 40960
+    },
+    {
+      "tree_hash": "8699f2405967d579cc9a6b33a04d065e83791110",
+      "message": "Clarify kernel timing and separate tolerance comparisons",
+      "version": "0.1.0",
+      "commit": "56192a6c47163b55a2f8ac2d0c50481495fcaa7c",
+      "committed_at": "2026-09-10T00:59:21.965278+00:00",
+      "bundle_size": 40960
+    },
+    {
+      "tree_hash": "d28e4a54847ffea905846ea2722eee3cd5508686",
+      "message": "document the cooperative-trust assumption",
+      "version": "0.1.0",
+      "commit": "c0c15f4eda61cd4aefdcaf663cb19fcc629f580d",
+      "committed_at": "2026-09-04T23:25:08.759044+00:00",
+      "bundle_size": 40960
+    }
+  ],
+  "projects": [],
+  "is_owner": false,
+  "star_count": 1,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "kernel-opt-fork",
+  "version_tree_hash": "76db49356748c18dccac376bed489268b047b60a",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "assets",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "hero.svg",
+      "path": "assets/hero.svg",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "kernel.c",
+      "path": "examples/baseline/kernel.c",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/baseline/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: kernel-opt\nversion: 0.1.0\n\nwatchdog_timeout_s: 600\n\nmetrics:\n  - {name: gflops, direction: max}\n\nparams:\n  n: {type: int, default: 512, min: 128, max: 2048}\n  tolerance: {type: float, default: 2.0e-3, min: 0.0, max: 0.1}\n\n# Timing shares nothing: one official evaluation at a time on the machine.\nexclusive: cpu\n",
+  "error": null,
+  "is_image": false
+}

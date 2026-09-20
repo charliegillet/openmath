@@ -1,0 +1,153 @@
+{
+  "hill": {
+    "name": "millennium-navier-stokes",
+    "slug": "ottogin/millennium-navier-stokes",
+    "description": "This file formalizes the Clay Mathematics Institute millennium problem concerning the existence and smoothness of solutions to the Navier-Stokes equations in three spatial dimensions. While the definitions are\u2026",
+    "tags": [],
+    "visibility": "public",
+    "owner_username": "ottogin",
+    "current_tree_hash": "83d463a34b9e03e5b6ff2180ab6e4c0ba37b44f9"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "83d463a34b9e03e5b6ff2180ab6e4c0ba37b44f9"
+  },
+  "describe": {
+    "hill": "millennium-navier-stokes",
+    "version": "0.1.0",
+    "spec_version": 3,
+    "path": "/home/ec2-user/qkayv/data/hills/ottogin/millennium-navier-stokes",
+    "tree_hash": "83d463a34b9e03e5b6ff2180ab6e4c0ba37b44f9",
+    "commit": "52b6b58ac3e67996684553e0ace104debb714454",
+    "committed": true,
+    "watchdog_timeout_s": 1800,
+    "exclusive_device": null,
+    "params": {},
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H millennium-navier-stokes --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/solution.json",
+      "examples/baseline/solution.lean",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "statement.lean",
+      "tests/test_hill.py"
+    ],
+    "readme": "# Existence And Smoothness Of The Navier\u2013Stokes Equation\n\nThis file formalizes the Clay Mathematics Institute millennium problem concerning\nthe existence and smoothness of solutions to the Navier-Stokes equations in three\nspatial dimensions. While the definitions are generalized to arbitrary dimension n,\nthe millennium problem specifically concerns the case n = 3.\n\n## References\n- [Wikipedia](https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_existence_and_smoothness)\n- [Clay Mathematics Institute](https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf)\n\n## Main Theorems (Clay Millennium Problem for n = 3)\n\nThe Clay Millennium Problem asks for a proof of one of the following four statements:\n\n- `navier_stokes_existence_and_smoothness_R3`: (A) Global existence on \u211d\u00b3\n- `navier_stokes_existence_and_smoothness_periodic`: (B) Global existence on \u211d\u00b3/\u2124\u00b3\n- `navier_stokes_breakdown_R3`: (C) Existence of breakdown scenario on \u211d\u00b3\n- `navier_stokes_breakdown_periodic`: (D) Existence of breakdown scenario on \u211d\u00b3/\u2124\u00b3\n\n## Variable conventions\n\nFefferman writes the velocity as $u(x,t)$, the initial velocity as $u^\\circ(x)$, the\npressure as $p(x,t)$, the force as $f(x,t)$, and the viscosity as $\\nu$. In Lean,\n`u\u2080 : \u211d^n \u2192 \u211d^n` denotes the initial velocity, while `v : \u211d^n \u2192 \u211d \u2192 \u211d^n`\ndenotes the solution velocity. The curried order `v x t`, `p x t`, and `f x t`\nkeeps the source convention that position comes before time.\n\nSince the Clay statement gives equation (1) on the closed time half-line $t \\ge 0$,\nthe time derivative is encoded with `derivWithin` relative to `Set.Ici 0`. The Clay\nPDF also includes errata; in particular, we include spatial 1-periodicity of the\npressure in the periodic case. The sign correction to the weak-solution identity in\nthe errata is not represented here, since this file formalizes the four prize\nalternatives rather than the later weak-solution discussion.\n\n## Task\n\nGive a **machine-checked Lean 4 proof** of the theorem `hill` below (toolchain v4.33.1, checked against Mathlib inside the hill's image). The statement is fixed; you write only the proof after the `:=`.\n\nThis is an **open Millennium Prize Problem** (Clay Mathematics Institute, $1M). No proof is known. It stands as a frontier target \u2014 a climber is not expected to solve it yet.\n\n## Submission format\n\nA submission is a directory containing:\n\n```\nsolution.lean    the proof (a term, or a `by` tactic block) that completes `theorem hill : \u2026 :=`\n```\n\nIt is appended to the fixed statement and to `#print axioms hill`, then checked with Lean. Do not restate the theorem or add imports; the statement's context (`import FormalConjecturesUtil` \u2192 Mathlib, definitions, namespace) is already in scope.\n\n## How it is scored\n\nThe proof counts only if it compiles, uses no `sorry`, and depends on no axioms beyond Lean and Mathlib's standard three (`propext`, `Classical.choice`, `Quot.sound`).\n\n| metric | direction | meaning |\n|---|---|---|\n| `proved` | max | 1 when the proof checks, else the attempt fails with the reason |\n\n\n## References\n\n- [Wikipedia](https://en.wikipedia.org/wiki/Navier%E2%80%93Stokes_existence_and_smoothness)\n- [Clay Mathematics Institute](https://www.claymath.org/wp-content/uploads/2022/06/navierstokes.pdf)\n\n\nFormalization from [google-deepmind/formal-conjectures](https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/Millenium/NavierStokes.lean).\n",
+    "metrics": [
+      {
+        "name": "proved",
+        "direction": "max"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "83d463a34b9e03e5b6ff2180ab6e4c0ba37b44f9",
+      "message": "import from formal-conjectures (Millennium Prize Problem)",
+      "version": "0.1.0",
+      "commit": "52b6b58ac3e67996684553e0ace104debb714454",
+      "committed_at": "2026-09-10T09:36:18.050525+00:00",
+      "bundle_size": 20480
+    }
+  ],
+  "projects": [],
+  "is_owner": false,
+  "star_count": 0,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "millennium-navier-stokes-fork",
+  "version_tree_hash": "83d463a34b9e03e5b6ff2180ab6e4c0ba37b44f9",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/baseline/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "solution.lean",
+      "path": "examples/baseline/solution.lean",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "statement.lean",
+      "path": "statement.lean",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 3\nname: millennium-navier-stokes\nversion: 0.1.0\nwatchdog_timeout_s: 1800\nmetrics:\n  - name: proved\n    direction: max\nenvironment:\n  image: ghcr.io/ottogin/lean-mathlib@sha256:964547ad81e109c78545512867bae70b710c55d833078674878faad7de0ebb85\nparams: {}\n",
+  "error": null,
+  "is_image": false
+}

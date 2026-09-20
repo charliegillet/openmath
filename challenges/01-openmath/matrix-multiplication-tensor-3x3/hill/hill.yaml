@@ -1,0 +1,7 @@
+spec_version: 2
+name: matrix-multiplication-tensor-3x3
+version: 0.1.0
+metrics:
+  - {name: rank, direction: min}
+  - {name: support, direction: min}
+watchdog_timeout_s: 120

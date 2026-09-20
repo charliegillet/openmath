@@ -1,0 +1,8 @@
+# never commit credentials
+.env
+*.env
+env/
+**/env
+secrets*
+*_token*
+credentials*

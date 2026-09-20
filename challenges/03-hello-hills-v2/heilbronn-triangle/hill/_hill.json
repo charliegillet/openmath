@@ -1,0 +1,186 @@
+{
+  "hill": {
+    "name": "heilbronn-triangle",
+    "slug": "ottogin/heilbronn-triangle",
+    "description": "Place 11 points inside a triangle. Make the smallest triangle formed by any three points as large as possible. Your submission is a set of coordinates.",
+    "tags": [
+      "math",
+      "optimization",
+      "demo"
+    ],
+    "visibility": "public",
+    "owner_username": "ottogin",
+    "current_tree_hash": "c1c942d123c071386ecb151321d801ded0710ba0"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "c1c942d123c071386ecb151321d801ded0710ba0"
+  },
+  "describe": {
+    "hill": "heilbronn-triangle",
+    "version": "0.1.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/ottogin/heilbronn-triangle",
+    "tree_hash": "c1c942d123c071386ecb151321d801ded0710ba0",
+    "commit": "9dcbc611f70dafb70bc719075d5caeabeecc5464",
+    "committed": true,
+    "watchdog_timeout_s": 120,
+    "exclusive_device": null,
+    "params": {
+      "n": {
+        "type": "int",
+        "default": 11,
+        "min": 4,
+        "max": 64,
+        "help": "Number of points to place. Reports only compare within the same n."
+      }
+    },
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H heilbronn-triangle --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "blobs.lock",
+      "eval.py",
+      "examples/alphaevolve/points.json",
+      "examples/baseline/points.json",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "uv.lock"
+    ],
+    "readme": "# Heilbronn triangles\n\nPlace 11 points inside a triangle. Make the smallest triangle formed by any three points as large as possible. Your submission is a set of coordinates.\n\n## Run the starter\n\nThe starter in `examples/baseline/` scores about **0.0317227922** at the default\nsettings. That means its smallest triangle occupies about **3.17%** of the\ncontainer's area. Higher is better, and the same coordinates give the same score.\n\n**On AutoLab:** Click **Start a climb**, then **Climb on AutoLab**. Choose an agent\nmodel and either a connected CPU machine or **CPU only (small)**. Set a model\nbudget under **More options**. AutoLab copies the starter into your climb. Read\nits baseline result before reviewing the agent's changes; pause when you want\nto stop.\n\n**Locally:** Choose **Climb locally** and paste its setup prompt into your coding\nagent. Ask it to run the starter first. Once the hill is downloaded, run these\ncommands from the project folder containing `.autolab/`:\n\n```sh\ncp -R .autolab/hills/heilbronn-triangle/examples/baseline ./my-points\nhills eval ./my-points -H heilbronn-triangle -o baseline.json\n```\n\nUse a fresh `my-points` folder. The report should say `passed: true` and show\n`min_area` near **0.0317227922**. The evaluator needs Python 3.11 or newer;\nits environment installs `mpmath` automatically. No GPU or private dataset is\nrequired. Local results are not automatically added to AutoLab's leaderboard.\n\n## Compute and cost\n\nThe agent model writes experiments; the compute runs them. The model budget covers model calls. Rented compute is billed separately. Pause the climb to stop experiments and release AutoLab rentals; your own connected machine remains yours to manage.\n\nBefore changing anything, open the baseline job and check for a passing score. **Nodes offline** means compute is disconnected, not that your solution failed.\n\n## Try a first change\n\nOn AutoLab, ask the agent to make this edit, then run one evaluation. For local work, edit your copied submission folder.\n\nOpen `my-points/points.json`. Each pair is a point's `[x, y]` coordinate.\nTry changing the first point's x coordinate from `\"0.335538289274\"` to\n`\"0.335638289274\"`, leaving its y coordinate and all other points unchanged:\n\n```sh\nhills eval ./my-points -H heilbronn-triangle -o attempt-1.json\n```\n\nCompare the score and `details.smallest_triangle` in the two reports. Those\nthree indices identify the points currently limiting the score; counting starts\nat zero. A valid edit can improve the score, lower it, or leave it unchanged if\na different triangle is the limiting one. Keep a copy of the starter so you can\nundo an edit.\n\nOnce that makes sense, try small perturbations of individual points, keeping\nvalid improvements. You may write a search program, but keep the hill's\nevaluator unchanged. The submission is the `points.json` your program produces.\n\n## What to submit\n\nSubmit a directory containing `points.json`, a JSON array of exactly 11 pairs\n`[x, y]`. The container has corners `(0, 0)`, `(1, 0)` and `(0.5, sqrt(3)/2)`.\nPoints may lie on the boundary. Two coinciding points or three collinear points\nmake the minimum area zero and are rejected.\n\nYou may change every coordinate and use any method to find an arrangement.\nCoordinates can be JSON numbers or numeric strings such as `\"0.288675134594813\"`.\nStrings preserve the supplied decimal digits. There is a limit of 200 significant\ndigits per coordinate; a nonzero coordinate cannot have magnitude below `1e-60`.\n\n## Read the result\n\n**`min_area` is the smallest triangle's area divided by the container's area.**\nThe evaluator computes it from all triples of points. The details include\n`min_area_30_digits` and `smallest_triangle` for a closer look at the result.\n\nA failed result explains the problem in `details.error`, such as a point outside\nthe container, the wrong number of points, or collinear points. Correct that\nproblem before comparing scores.\n\n## Reference construction\n\n`examples/alphaevolve/` contains a stronger reference arrangement, scoring about\n**0.0365298899** here. The [2025 AlphaEvolve paper, section B.9](https://storage.googleapis.com/deepmind-media/DeepMind.com/Blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/AlphaEvolve.pdf)\nreported a construction above 0.0365, improving on the earlier 0.036 result.\nThese are dated reference values, not a claim about the current record. Running\nthe supplied arrangement reproduces that example; copying it is not a new discovery.\n\n## Precision and other settings\n\nTriangle determinants are computed with exact rational arithmetic. The final\ndivision by the container area uses 60-digit arithmetic because it involves\n`sqrt(3)`. Containment allows `1e-12` of slack for coordinates rounded near an\nedge; the area uses the coordinates as submitted.\n\n| Parameter | Default | Meaning |\n| --- | --- | --- |\n| `n` | 11 | Required point count; different counts compare separately |\n\nTo try another point count, supply a matching array and use, for example,\n`hills eval ./my-points -H heilbronn-triangle -p n=12`.\n\nThere is no held-out data. `--final` performs the same computation and records a\nseparate test-mode report. Keep reports unedited; `hills verify` checks their\nsignatures using the matching signing key.\n\n## If the first run fails\n\n- **Wrong point count:** submit exactly 11 pairs in `points.json`.\n- **Outside the triangle:** check the point index reported in `details.error`.\n- **Zero-area triangle:** two points coincide or three are collinear. Restore the starter, then try a smaller edit.\n\nUse `details.smallest_triangle` to find the three points limiting a valid result. Compare `min_area` at the same point count; higher is better.\n\n## Versions and comparisons\n\nA climb stays on the hill version selected when it was created. To try a newly published version, start a new climb from the hill page. Old results stay with their original version, including when a new version only changes this README.\n",
+    "metrics": [
+      {
+        "name": "min_area",
+        "direction": "max"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "c1c942d123c071386ecb151321d801ded0710ba0",
+      "message": "Clarify starter workflow, compute, scoring and troubleshooting",
+      "version": "0.1.0",
+      "commit": "9dcbc611f70dafb70bc719075d5caeabeecc5464",
+      "committed_at": "2026-09-10T05:36:39.075868+00:00",
+      "bundle_size": 20480
+    },
+    {
+      "tree_hash": "2ce503aa970f841071ef348ca576221215ee2edf",
+      "message": "Add a tested Heilbronn starter walkthrough",
+      "version": "0.1.0",
+      "commit": "160988295121fc5f90d0fb352a1a8f4ad40bb3c9",
+      "committed_at": "2026-09-10T00:59:19.049529+00:00",
+      "bundle_size": 20480
+    },
+    {
+      "tree_hash": "76f70a7e1787157a34eda14c4dc0b72925b8e72f",
+      "message": "containment slack, input caps, AlphaEvolve fixture",
+      "version": "0.1.0",
+      "commit": "bbd6f642a7a843b3b5d642bf2df9e5f4584ae33c",
+      "committed_at": "2026-09-05T12:42:23.461247+00:00",
+      "bundle_size": 20480
+    }
+  ],
+  "projects": [],
+  "is_owner": false,
+  "star_count": 1,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "heilbronn-triangle-fork",
+  "version_tree_hash": "c1c942d123c071386ecb151321d801ded0710ba0",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "alphaevolve",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "points.json",
+      "path": "examples/alphaevolve/points.json",
+      "depth": 2
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "points.json",
+      "path": "examples/baseline/points.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: heilbronn-triangle\nversion: 0.1.0\n\nmetrics:\n  - {name: min_area, direction: max}\n\nwatchdog_timeout_s: 120\n\nparams:\n  n:\n    type: int\n    default: 11\n    min: 4\n    max: 64\n    help: \"Number of points to place. Reports only compare within the same n.\"\n",
+  "error": null,
+  "is_image": false
+}

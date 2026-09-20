@@ -1,0 +1,342 @@
+{
+  "hill": {
+    "name": "diffusion-parabola",
+    "slug": "ottogin/diffusion-parabola",
+    "description": "Train a small diffusion model to generate points along a noisy parabola. The evaluator compares your points with a held-out sample. Lower Chamfer distance is better.",
+    "tags": [
+      "ml",
+      "demo"
+    ],
+    "visibility": "public",
+    "owner_username": "ottogin",
+    "current_tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe"
+  },
+  "describe": {
+    "hill": "diffusion-parabola",
+    "version": "0.1.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/ottogin/diffusion-parabola",
+    "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+    "commit": "8157ae7c260f7d882d35f4b69ec7c9bc17230d92",
+    "committed": true,
+    "watchdog_timeout_s": 600,
+    "exclusive_device": null,
+    "params": {
+      "steps": {
+        "type": "int",
+        "default": 10000,
+        "min": 100,
+        "max": 50000,
+        "help": "training steps requested from the submission; PRIMARY, so different budgets rank separately (1000 for a quick check, 10000 by default)"
+      },
+      "n_samples": {
+        "type": "int",
+        "default": 2000,
+        "min": 100,
+        "max": 20000,
+        "help": "how many points the submission generates and is scored on; PRIMARY, so different sample counts rank separately"
+      }
+    },
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H diffusion-parabola --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/solution.py",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "uv.lock"
+    ],
+    "readme": "# Diffusion parabola\n\nTrain a small diffusion model to generate points along a noisy parabola. The evaluator compares your points with a held-out sample. Lower Chamfer distance is better.\n\n**First run:** choose **Climb on AutoLab**. The starter runs on CPU. Official scoring needs private evaluation data that is omitted from the public local download.\n\n## Run the starter\n\n`examples/baseline/solution.py` contains a working denoising diffusion model in\nNumPy. It trains on the points supplied by the evaluator and generates a new\ncloud. Python 3.11 or newer and NumPy are enough. The supplied starter runs on CPU even if you rent a GPU. You can write a GPU implementation, but it is optional for this hill.\n\nOn AutoLab, click **Start a climb**, then **Climb on AutoLab**. Choose a model\nfor the agent and a connected CPU machine or **CPU only (small)**. Set a model\nbudget under **More options**. AutoLab copies the starter into your climb and\nevaluates it before making changes. Open that baseline job to see its score,\ncode and analysis. Pause the climb when you want to stop.\n\nThe default run requests **10000 training steps** and **2000 generated points**.\nFor a quicker check, use 1000 steps. Compare changes at the same step budget and\nsample count. Scores from 1000 and 10000 steps belong to separate comparisons.\n\nIn local checks of this evaluator, the copied starter scored about **0.12080**\nat 1000 steps and **0.05791** at 10000, both with 2000 samples. The default\nresult repeated exactly on that machine. These are reference results, not a\npromise that every NumPy/CPU combination produces identical floating-point\noutput.\n\n## Compute and cost\n\nThe agent model writes experiments; the compute runs them. The model budget covers model calls. Rented compute is billed separately. Pause the climb to stop experiments and release AutoLab rentals; your own connected machine remains yours to manage.\n\nBefore changing anything, open the baseline job and check for a passing score. **Nodes offline** means compute is disconnected, not that your solution failed.\n\n## Try a first change\n\nOn AutoLab, ask the agent to make this edit in your submission, then run one evaluation against the baseline.\n\nIn `solution.py`, change `LR = 2e-3` to `LR = 1e-3`. This changes the learning\nrate while keeping the model and training budget fixed. Run again with the\nsame settings and compare Chamfer distance. A smaller learning rate can help\nor hurt: this edit scored about **0.06263** in our default local check, so it\nwas worse than the starter. Keep the baseline and use that result to guide the\nnext experiment.\n\nAfter that, try the hidden width, noise schedule or sampling procedure, one\nchange at a time. Keep training on the supplied data.\n\n## What to submit\n\nSubmit a directory containing `solution.py` with this function:\n\n```python\ndef train_and_sample(data, *, steps, n_samples, seed):\n    # data: NumPy array of shape (2000, 2), the training points\n    # steps: requested number of training updates\n    # n_samples: number of points to return\n    # seed: seed for your own random number generator\n    # Return a finite NumPy-compatible array of shape (n_samples, 2).\n    ...\n```\n\nYou may change the model, optimizer, hyperparameters and sampling code. NumPy\nand the standard library are available in the evaluation environment. Extra\npackages are not guaranteed just because the machine has a GPU.\n\nThis is a **cooperative learning exercise**. Train a model on the supplied\npoints and honor the requested update count. Do not substitute the known\nparabola formula, replay the training points, read private evaluation data, or\nchange the evaluator. Those shortcuts can earn a score without teaching the\nlesson this hill is meant to teach.\n\n## What the score means\n\nThe public training distribution is:\n\n```text\nx ~ Uniform(-2, 2)\ny = x**2 + Normal(0, 0.1)\n```\n\nFor each generated point, the evaluator finds its nearest held-out point and\naverages those distances. It then does the same in the other direction and\nadds the two averages. This measures how well the point clouds cover each\nother. It does **not** prove that their probability densities match, or that\nthe submission learned a diffusion model.\n\nThe evaluator passes `steps` into your function. It does not inspect how many\nupdates you perform or enforce equal compute across different architectures.\nA 600-second watchdog stops a hung evaluation; it is not the training budget.\n\nA bad import, exception, wrong output shape or NaN/inf produces a failed result\nwith a reason in `details.error`. Fix that before comparing scores.\n\n## Local work\n\nYou can develop the model locally, but the public download omits private data\nneeded for official scoring. **Use AutoLab for scored runs with the public\nversion.** A separate public practice evaluation is not available yet.\n\nWith an authorized complete bundle, run from the folder containing `.autolab/`,\nusing a fresh `my-model` directory:\n\n```sh\ncp -R .autolab/hills/diffusion-parabola/examples/baseline ./my-model\nhills eval ./my-model -H diffusion-parabola -p steps=1000 -o short.json\nhills eval ./my-model -H diffusion-parabola -o baseline.json\n```\n\nLocal results are not automatically added to AutoLab's leaderboard.\n\n## Settings and final evaluation\n\n| Parameter | Default | Meaning |\n| --- | --- | --- |\n| `steps` | 10000 | Training updates requested from the submission |\n| `n_samples` | 2000 | Number of points generated and scored |\n\nBoth settings separate comparison groups. Validation and `--final` use\ndifferent private sample seeds and also rank separately. Training data and\nthe seed passed to your model stay fixed. Use final evaluation once you have\nchosen a submission, rather than tuning against it.\n\nKeep reports unedited. `hills verify` checks signatures with the matching\nsigning key. Private files are omitted from the public bundle, but code and\nevaluation share an operating-system user on AutoLab; this is not a sandbox.\n\n## If the first run fails\n\n- **Missing private data locally:** use **Climb on AutoLab** for official scoring. The public download supports model development, but cannot reproduce the official score by itself.\n- **Wrong output shape:** return exactly `n_samples` rows with two coordinates each. Do not hardcode 2000 when the function requests another count.\n- **NaN or infinite values:** inspect training stability and your sampling calculation. Restore the starter before trying another change.\n- **Missing a GPU package:** renting a GPU does not install every training library into the evaluator's environment. The supplied starter uses NumPy on CPU; a GPU implementation needs its own compatible dependencies.\n\nCompare the same requested steps, sample count and evaluation mode. Keep the baseline when a valid experiment raises Chamfer distance. Changing the sample count changes the comparison group, not just the amount of work in the same benchmark.\n\n## Versions and comparisons\n\nA climb stays on the hill version selected when it was created. To try a newly published version, start a new climb from the hill page. Old results stay with their original version, including when a new version only changes this README.\n",
+    "metrics": [
+      {
+        "name": "chamfer_distance",
+        "direction": "min"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "message": "Clarify starter workflow, compute, scoring and troubleshooting",
+      "version": "0.1.0",
+      "commit": "8157ae7c260f7d882d35f4b69ec7c9bc17230d92",
+      "committed_at": "2026-09-10T05:36:44.218300+00:00",
+      "bundle_size": 40960
+    },
+    {
+      "tree_hash": "f9843a43f74aa9de10cd76f704fe736c6c082af0",
+      "message": "Document measured starter and first edit results",
+      "version": "0.1.0",
+      "commit": "49d13651e674a8962b1bcacdab88f21b419d686f",
+      "committed_at": "2026-09-10T00:59:23.249618+00:00",
+      "bundle_size": 40960
+    },
+    {
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "message": "diffusion-parabola: numpy DDPM baseline, chamfer_distance (min), steps primary",
+      "version": "0.1.0",
+      "commit": "9028baf05425d71e653ce58b7204e2934ec19e9d",
+      "committed_at": "2026-09-04T23:25:06.716782+00:00",
+      "bundle_size": 30720
+    }
+  ],
+  "projects": [
+    {
+      "slug": "ashleychenyj/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbgGuCFVXqRc5ZEQPuau6nG5KZ",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "kparasha/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3Jbfkjg6ldjLgob8fFAvqvcMNkE",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "fkaita/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbagJBTTZw8QwKjYN6G8GnpbHE",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "alexandra-sera-hsu/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbYzb1lU0jTJwd0CjT8ayrpkGT",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "vikas1188/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbYROIz8De3wccaCWaWcEHGrVb",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "connorbuchheit/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbXzmYZcQg5I1OTAIXMMdKXsN0",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "luizfelipebarbosa/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbXRRUm3deuGOW0Max5kkHglgl",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "yhinai/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbXC9w2z9LVEtCwstnCb1LboPS",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "claudioolmedo/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbVjcdFh1wlmhIv2dF07tXHJRp",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "1c1jp5dhwy/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbUxmuJ57YguNbuLCRcj7Jaai0",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "jacobwell/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbUvmj0x4yR66oewjO5iwyqofW",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "monaim1/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JbUmYeQ7rMGxvFKhdxjY4bfVZe",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "sergeicu/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3BpCnYHHcyuX7AYzsCduPpWZnTh",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "alejandrozu/example-climb-on-training-a-small-generative-model",
+      "name": "Example climb on training a small generative model",
+      "owner_id": "user_3JVnVxZKi6Bl4mmI5D65h6sMvcC",
+      "tree_hash": "a3d3cd911a7b14d25418b45e5a3ff9ccb2f39189",
+      "status": "paused"
+    },
+    {
+      "slug": "malikzeeshan1122/diffusion-parabola",
+      "name": "Diffusion Parabola",
+      "owner_id": "user_3JRHfNe2zO4tqEdyT3S6E6y4i5X",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "blocked"
+    },
+    {
+      "slug": "hamidrezakmk/diffusion-parabola",
+      "name": "Diffusion Parabola",
+      "owner_id": "user_3Brf7FpktvGxrYtqxsxG7yPNyOP",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "blocked"
+    },
+    {
+      "slug": "abansal132/diffusion-parabola",
+      "name": "Diffusion Parabola",
+      "owner_id": "user_3IFTSzACUtaF1YkqOwmghCFa82u",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "blocked"
+    },
+    {
+      "slug": "wilsonwu-ai/diffusion-parabola",
+      "name": "Diffusion Parabola",
+      "owner_id": "user_3JNJGV2444ITxY5KC28fPsvj6Vy",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "blocked"
+    },
+    {
+      "slug": "softchallenge2012/diffusion-parabola",
+      "name": "Diffusion Parabola",
+      "owner_id": "user_3JMkkXTzZD5kJZw15CiqF1nOnbY",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "blocked"
+    },
+    {
+      "slug": "mickdarling/diffusion-parabola",
+      "name": "Diffusion Parabola",
+      "owner_id": "user_3JMFCPXpXulNb9AO0RWP7soiNDd",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "blocked"
+    },
+    {
+      "slug": "ottogin/diffusion-parabola-attempt-3",
+      "name": "Diffusion Parabola attempt 3",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "paused"
+    },
+    {
+      "slug": "sundaiclub/diffusion-parabola",
+      "name": "Diffusion Parabola",
+      "owner_id": "user_3BvfVqOAn3WoVkJ2U5P4hDabHdm",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "blocked"
+    },
+    {
+      "slug": "ottogin/diffusion-parabola-attempt-1",
+      "name": "Diffusion Parabola attempt 1",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+      "status": "paused"
+    }
+  ],
+  "is_owner": false,
+  "star_count": 1,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "diffusion-parabola-fork",
+  "version_tree_hash": "3f80b6d769cb0c44815edee4da1d1a890efdc3fe",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "solution.py",
+      "path": "examples/baseline/solution.py",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: diffusion-parabola\nversion: 0.1.0\n\n# What the evaluator reports, in ranking order. Lower Chamfer distance is better.\nmetrics:\n  - {name: chamfer_distance, direction: min}\n\n# Hard kill for a hung evaluator. The numpy baseline trains 10k steps and samples\n# in a few seconds on CPU; this bound only stops a pathological submission from\n# wedging an agent loop.\nwatchdog_timeout_s: 600\n\n# Typed knobs the tool validates and passes to eval() as keyword arguments.\nparams:\n  steps:\n    type: int\n    default: 10000\n    min: 100\n    max: 50000\n    help: \"training steps requested from the submission; PRIMARY, so different budgets rank separately (1000 for a quick check, 10000 by default)\"\n  n_samples:\n    type: int\n    default: 2000\n    min: 100\n    max: 20000\n    help: \"how many points the submission generates and is scored on; PRIMARY, so different sample counts rank separately\"\n",
+  "error": null,
+  "is_image": false
+}

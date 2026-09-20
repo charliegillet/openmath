@@ -1,0 +1,165 @@
+{
+  "hill": {
+    "name": "matrix-multiplication-tensor-3x3",
+    "slug": "alejandrozu/matrix-multiplication-tensor-3x3",
+    "description": "Find exact low-rank decompositions of the tensor for general 3 by 3 matrix multiplication over the rationals.",
+    "tags": [],
+    "visibility": "public",
+    "owner_username": "alejandrozu",
+    "current_tree_hash": "526770e74b465dbd444049d169e2f373eeb0339d"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "526770e74b465dbd444049d169e2f373eeb0339d"
+  },
+  "describe": {
+    "hill": "matrix-multiplication-tensor-3x3",
+    "version": "0.1.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/alejandrozu/matrix-multiplication-tensor-3x3",
+    "tree_hash": "526770e74b465dbd444049d169e2f373eeb0339d",
+    "commit": "63260ee2b02247200888cb63faf3ada44e6cffeb",
+    "committed": true,
+    "watchdog_timeout_s": 120,
+    "exclusive_device": null,
+    "params": {},
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H matrix-multiplication-tensor-3x3 --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/solution.json",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "uv.lock"
+    ],
+    "readme": "Find exact low-rank decompositions of the tensor for general 3 by 3 matrix multiplication over the rationals.\n\n## Task\n\nConstruct a bilinear algorithm for multiplying two arbitrary `3 x 3` matrices. The longstanding open problem is whether this tensor has rank at most 22. Rank 23 is known; the supplied baseline is Laderman's rank-23 decomposition.\n\nYour submission gives three factor matrices `U`, `V`, and `W`. With row-major input coordinates `A[0], ..., A[8]` and `B[0], ..., B[8]`, each term `t` computes\n\n```\nL_t(A) = sum_i U[t][i] A[i]\nR_t(B) = sum_j V[t][j] B[j]\nM_t = L_t(A) R_t(B)\n```\n\nand the output is reconstructed as `sum_t W[t][k] M_t`. The `W` coordinate for output entry `C[row][column]` is `3 * column + row` (column-major).\n\nThe evaluator expands every candidate exactly and checks all 729 Brent identities. It never executes submission code. A rank-22 certificate would be a major result; a new exact rank-23 decomposition with lower support is meaningful progress for this hill.\n\n## Submission format\n\nA submission is a directory containing exactly one regular file:\n\n```text\nsolution.json\n```\n\nIt is an object with exactly three fields:\n\n```json\n{\n  \"u\": [[0, 1, 0, 0, 0, 0, 0, 0, 0]],\n  \"v\": [[1, 0, 0, 0, 0, 0, 0, 0, 0]],\n  \"w\": [[1, 0, 0, 0, 0, 0, 0, 0, 0]]\n}\n```\n\n`u`, `v`, and `w` must each be a list of the same number of rows, between 1 and 40. Every row has exactly 9 exact rational coefficients. Write an integer as a JSON integer, or a non-integral rational as `[numerator, denominator]` with a positive denominator. Numerators and denominators have absolute value at most one million.\n\nThe example above is only one schoolbook term and is not a complete algorithm. A valid submission must satisfy the complete matrix-multiplication tensor identity.\n\n## Metric\n\n| metric | direction | meaning |\n|---|---|---|\n| `rank` | min | Number of bilinear products, namely the number of rows of `u`, `v`, and `w`. |\n| `support` | min | Total number of nonzero coefficients in `u`, `v`, and `w`; a compactness tie-breaker, not a claimed addition count. |\n\nScores rank lexicographically, then compare support among equal-rank schemes. The evaluator computes both values from the submitted factor matrices.\n\n## Exact and held-out checks\n\nThe 729 symbolic identities are decisive, so no random sample can substitute for correctness. Private validation and final files contain disjoint concrete matrix-product replays as an additional regression guard; they do not weaken or replace the full symbolic check. Run the held-out mode with:\n\n```text\nhills eval <submission> -H matrix-multiplication-tensor-3x3 --final\n```\n\n## Fixed conventions\n\n- `A` and `B` use row-major coordinate order.\n- `W` uses the stated column-major coordinate order for `C`.\n- Scalar products preserve the order `L_t(A) R_t(B)`, so ternary certificates also apply to noncommutative rings.\n- Coefficient encoding, full tensor target, and both metric definitions are fixed in this hill version.\n",
+    "metrics": [
+      {
+        "name": "rank",
+        "direction": "min"
+      },
+      {
+        "name": "support",
+        "direction": "min"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "526770e74b465dbd444049d169e2f373eeb0339d",
+      "message": "first version",
+      "version": "0.1.0",
+      "commit": "63260ee2b02247200888cb63faf3ada44e6cffeb",
+      "committed_at": "2026-09-18T18:59:42.403512+00:00",
+      "bundle_size": 20480
+    }
+  ],
+  "projects": [
+    {
+      "slug": "connorbuchheit/matrix-multiplication-tensor-3x3-attempt-2",
+      "name": "Matrix Multiplication Tensor 3X3 attempt 2",
+      "owner_id": "user_3JbXzmYZcQg5I1OTAIXMMdKXsN0",
+      "tree_hash": "526770e74b465dbd444049d169e2f373eeb0339d",
+      "status": "running"
+    },
+    {
+      "slug": "ottogin/matrix-multiplication-tensor-3x3-attempt-1",
+      "name": "Matrix Multiplication Tensor 3X3 attempt 1",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "526770e74b465dbd444049d169e2f373eeb0339d",
+      "status": "paused"
+    }
+  ],
+  "is_owner": false,
+  "star_count": 1,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "matrix-multiplication-tensor-3x3-fork",
+  "version_tree_hash": "526770e74b465dbd444049d169e2f373eeb0339d",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/baseline/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: matrix-multiplication-tensor-3x3\nversion: 0.1.0\nmetrics:\n  - {name: rank, direction: min}\n  - {name: support, direction: min}\nwatchdog_timeout_s: 120\n",
+  "error": null,
+  "is_image": false
+}

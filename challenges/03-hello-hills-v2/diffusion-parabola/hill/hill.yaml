@@ -1,0 +1,27 @@
+spec_version: 2
+name: diffusion-parabola
+version: 0.1.0
+
+# What the evaluator reports, in ranking order. Lower Chamfer distance is better.
+metrics:
+  - {name: chamfer_distance, direction: min}
+
+# Hard kill for a hung evaluator. The numpy baseline trains 10k steps and samples
+# in a few seconds on CPU; this bound only stops a pathological submission from
+# wedging an agent loop.
+watchdog_timeout_s: 600
+
+# Typed knobs the tool validates and passes to eval() as keyword arguments.
+params:
+  steps:
+    type: int
+    default: 10000
+    min: 100
+    max: 50000
+    help: "training steps requested from the submission; PRIMARY, so different budgets rank separately (1000 for a quick check, 10000 by default)"
+  n_samples:
+    type: int
+    default: 2000
+    min: 100
+    max: 20000
+    help: "how many points the submission generates and is scored on; PRIMARY, so different sample counts rank separately"

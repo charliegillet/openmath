@@ -1,0 +1,16 @@
+{
+  "lock_version": 1,
+  "kind": "private",
+  "entries": [
+    {
+      "path": "private/test.json",
+      "sha256": "1ce68cbe0e8e3c2a2f0003dc57792c5e9a621284eb08fe100e1d069d88dad811",
+      "size": 23
+    },
+    {
+      "path": "private/validation.json",
+      "sha256": "0b875b68f6a678186abba15a8b26edc5738ef62fb50b6b8cccfe7bb06beabe56",
+      "size": 22
+    }
+  ]
+}

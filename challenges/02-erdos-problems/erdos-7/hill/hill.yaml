@@ -1,0 +1,10 @@
+spec_version: 3
+name: erdos-7
+version: 0.1.0
+watchdog_timeout_s: 1800
+metrics:
+  - name: proved
+    direction: max
+environment:
+  image: ghcr.io/ottogin/lean-mathlib@sha256:964547ad81e109c78545512867bae70b710c55d833078674878faad7de0ebb85
+params: {}

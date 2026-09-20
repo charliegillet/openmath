@@ -1,0 +1,75 @@
+{
+  "openmath": {
+    "slug": "alejandrozu/openmath",
+    "title": "OpenMath \u2014 Six Hills + The Week 100",
+    "total_climbs": 13,
+    "hills": [
+      "alejandrozu/busy-beaver-6-certificates",
+      "alejandrozu/clique-cluster-ramsey-multiplicity",
+      "alejandrozu/collatz-modular-descent",
+      "alejandrozu/grothendieck-constant-witnesses",
+      "alejandrozu/kobon-triangles",
+      "alejandrozu/matrix-multiplication-tensor-3x3"
+    ]
+  },
+  "erdos-problems": {
+    "slug": "ottogin/erdos-problems",
+    "title": "Erd\u0151s Problems",
+    "total_climbs": 1,
+    "hills": [
+      "ottogin/erdos-1",
+      "ottogin/erdos-10",
+      "ottogin/erdos-11",
+      "ottogin/erdos-12",
+      "ottogin/erdos-13",
+      "ottogin/erdos-14",
+      "ottogin/erdos-15",
+      "ottogin/erdos-16",
+      "ottogin/erdos-17",
+      "ottogin/erdos-18",
+      "ottogin/erdos-2",
+      "ottogin/erdos-20",
+      "ottogin/erdos-22",
+      "ottogin/erdos-24",
+      "ottogin/erdos-25",
+      "ottogin/erdos-26",
+      "ottogin/erdos-28",
+      "ottogin/erdos-3",
+      "ottogin/erdos-30",
+      "ottogin/erdos-31",
+      "ottogin/erdos-33",
+      "ottogin/erdos-34",
+      "ottogin/erdos-36",
+      "ottogin/erdos-38",
+      "ottogin/erdos-39",
+      "ottogin/erdos-4",
+      "ottogin/erdos-40",
+      "ottogin/erdos-5",
+      "ottogin/erdos-6",
+      "ottogin/erdos-7"
+    ]
+  },
+  "hello-hills-v2": {
+    "slug": "seanaklein19/hello-hills-v2",
+    "title": "Hello hills v2",
+    "total_climbs": 50,
+    "hills": [
+      "ottogin/circle-packing",
+      "ottogin/diffusion-parabola",
+      "ottogin/heilbronn-triangle",
+      "ottogin/kernel-opt",
+      "ottogin/shakespeare"
+    ]
+  },
+  "millennium-prize-problems": {
+    "slug": "ottogin/millennium-prize-problems",
+    "title": "Millennium Prize Problems",
+    "total_climbs": 0,
+    "hills": [
+      "ottogin/millennium-navier-stokes",
+      "ottogin/millennium-p-vs-np",
+      "ottogin/millennium-poincare",
+      "ottogin/millennium-riemann-hypothesis"
+    ]
+  }
+}

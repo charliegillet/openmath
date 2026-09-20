@@ -1,0 +1,15 @@
+spec_version: 2
+name: kernel-opt
+version: 0.1.0
+
+watchdog_timeout_s: 600
+
+metrics:
+  - {name: gflops, direction: max}
+
+params:
+  n: {type: int, default: 512, min: 128, max: 2048}
+  tolerance: {type: float, default: 2.0e-3, min: 0.0, max: 0.1}
+
+# Timing shares nothing: one official evaluation at a time on the machine.
+exclusive: cpu

@@ -1,0 +1,16 @@
+spec_version: 2
+name: heilbronn-triangle
+version: 0.1.0
+
+metrics:
+  - {name: min_area, direction: max}
+
+watchdog_timeout_s: 120
+
+params:
+  n:
+    type: int
+    default: 11
+    min: 4
+    max: 64
+    help: "Number of points to place. Reports only compare within the same n."

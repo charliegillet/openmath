@@ -1,0 +1,191 @@
+{
+  "hill": {
+    "name": "clique-cluster-ramsey-multiplicity",
+    "slug": "alejandrozu/clique-cluster-ramsey-multiplicity",
+    "description": "Search weighted clique-cluster templates whose infinite blow-up families improve the published upper bound for the four-clique Ramsey multiplicity constant.",
+    "tags": [],
+    "visibility": "public",
+    "owner_username": "alejandrozu",
+    "current_tree_hash": "d30eba780f9526ad4b8c3b6c57c96632cb5b0311"
+  },
+  "current": {
+    "version": "1.0.0",
+    "tree_hash": "d30eba780f9526ad4b8c3b6c57c96632cb5b0311"
+  },
+  "describe": {
+    "hill": "clique-cluster-ramsey-multiplicity",
+    "version": "1.0.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/alejandrozu/clique-cluster-ramsey-multiplicity",
+    "tree_hash": "d30eba780f9526ad4b8c3b6c57c96632cb5b0311",
+    "commit": "a97b93c118b29df95ed4986c33a78a658d3f2989",
+    "committed": true,
+    "watchdog_timeout_s": 600,
+    "exclusive_device": null,
+    "params": {},
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H clique-cluster-ramsey-multiplicity --final",
+    "files": [
+      ".gitignore",
+      "LIFTING.md",
+      "README.md",
+      "SOURCES.md",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/solution.json",
+      "examples/published_cayley_768/SOURCE.md",
+      "examples/published_cayley_768/solution.json",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "uv.lock"
+    ],
+    "readme": "Search weighted clique-cluster templates whose infinite blow-up families improve the published upper bound for the four-clique Ramsey multiplicity constant.\n\n## The open mathematical target\n\nColor every edge of a complete graph red or blue. Let M4(G) be the number of four-vertex subsets whose six edges have the same color. The Ramsey multiplicity constant is\n\n    c4 = lim(n -> infinity) min_{|V(G)|=n} M4(G) / binom(n,4).\n\nThe exact value of c4 is open in the literature inspected for this version. This hill targets a concrete advance on that infinite extremal problem:\n\n    Construct a sequence of finite two-colored complete graphs, of unbounded\n    order, whose limiting monochromatic K4 density is strictly below\n    B* = 10486266368 / 768^4 = 0.030142273431942788...\n\nB* is McKay's improved construction recorded in the final note of Parczyk, Pokutta, Spiegel and Szabo, arXiv:2206.04036v3 (2024; journal issue 2025). It is stronger than the paper's headline Theorem 1.1 bound 4551721/(2^24*9). Merely reproducing that headline theorem is NOT research progress against B*.\n\nOpen-status review date: 2026-09-19. This is a frozen, sourced reference, not a promise that a literature search is exhaustive. See SOURCES.md. A new bound must also pass novelty and competition review before being called a new research result.\n\n## Why clique clusters are relevant\n\nAlejandro Zarzuelo Urdiales's clique-cluster work studies replacing vertices with coding cliques, retaining weighted or multigraph information, and enumerating graphs by clique number. The search language here also replaces vertices by clusters, with exact control of connections and clique counts. Each cluster is a clique in one of the two colors; its size is an integer weight.\n\nThis is a related construction language, not an assertion that the CC encoding automatically preserves Ramsey density. Its coding gadgets may introduce many extra cliques. Any proposed use of that encoding must be measured on the resulting template by this evaluator. No unproved transfer principle or result from the organizer's papers is assumed for scoring. Read LIFTING.md for the elementary, self-contained theorem that connects a certificate to an infinite family.\n\n## Certificate and the infinite family it defines\n\nSubmit a directory containing a regular, non-symlink solution.json:\n\n```json\n{\n  \"schema\": \"weighted-two-color-blowup-v1\",\n  \"weights\": [1, 1],\n  \"red_rows\": [\"01\", \"10\"]\n}\n```\n\nThere are m blocks, 1 <= m <= 1024. Each weight w_i is an integer from 1 to 65535. The list red_rows encodes a symmetric m by m matrix A of bits as strings. For i != j, A_ij=1 means all inter-block edges are red, and 0 means blue. The DIAGONAL is meaningful: A_ii=1 makes block i a red clique, while A_ii=0 makes it a blue clique. These are not self-loops in the resulting simple graph.\n\nFor EVERY positive integer t, expand block i to t*w_i distinct vertices. The resulting graph G_t has t*Q vertices, where Q=sum(w_i). Thus one certificate defines arbitrarily large graphs. Common scaling of all weights does not change its density; the verifier divides out their greatest common divisor.\n\nThe exact limit is\n\n    P(A,w) = (1/Q^4) sum_{i,j,k,l=0}^{m-1} w_i*w_j*w_k*w_l *\n      [ A_ij*A_ik*A_il*A_jk*A_jl*A_kl\n        + (1-A_ij)*(1-A_ik)*(1-A_il)*(1-A_jk)*(1-A_jl)*(1-A_kl) ].\n\nRepeated indices MUST be included: two different vertices in a large cluster have the same template index. Counting only four distinct template vertices gives the wrong limit. The evaluator performs exact integer counting and rational comparisons. It returns P as a reduced fraction and separately returns the red and blue integer counts.\n\nThe example above has P=1/8. It illustrates the schema and is not a competitive seed or new mathematics. Start serious work from examples/published_cayley_768/solution.json, the attributed published construction supplied with this hill. Its density is 4551721/(2^24*9), which does NOT beat B*.\n\n## Progress, success, and resolution\n\n1. **Search progress:** decrease exact P compared with your previous submission. This improves your construction, but does not alone establish a previously unknown mathematical bound.\n2. **The hill's bound-improvement target is achieved:** a valid certificate has exact P < B*. The evaluator sets reference_beaten=1 and target_achieved=true. This gives a checked candidate upper bound c4 <= P < B*, via the lifting theorem. Equality with B* earns no success flag. Novelty, attribution, and an approved formal/certificate trust boundary still require review.\n3. **Full resolution of the parent problem:** prove the exact value of c4, including a universal lower bound matching a construction. This evaluator accepts upper-bound constructions only, and ALWAYS reports parent_problem_resolved=false. A record improvement does not resolve the exact-value problem.\n\nNo finite catalog is being completed. There is no \"all cases solved\" condition. Reaching a local optimum, using all 1024 blocks, or running out of time proves neither optimality nor nonexistence of a better template. Templates are one allowed construction class, not a characterization of every asymptotically optimal graph sequence.\n\n## Scoring\n\n| Metric | Direction | Exact meaning |\n|---|---|---|\n| reference_beaten | maximize | 1 iff the exact rational P is strictly less than B*, otherwise 0. |\n| density_ppt | minimize | ceil(10^12 * P); an integer upper rounding of density in parts per trillion. |\n\nRanking is lexicographic. P itself and the exact gap B*-P are in report details. Changes smaller than 10^-12 can tie on the display metric; exact fractions must be used for any mathematical comparison. The success flag uses exact arithmetic, even for such small changes. A passing report means a valid certificate, not that the research target has been achieved or that the competition jury has accepted a solution.\n\n## Validation and final evaluation\n\nThe mathematical objective is deterministic and uses every entry of the submitted template. Both modes compute the SAME P. This is a certificate task, so a held-out sample of graphs would provide no additional evidence about the infinite family and is not used.\n\nprivate/validation.json and private/test.json instead hold disjoint tiny arithmetic fixtures, checked against an independent ordered-tuple oracle. They audit the trusted evaluator, do not provide target answers, and do not change the score. They are not presented as a generalization test. Final evaluation reruns the entire certificate with the separate audit suite.\n\n    hills eval <submission> -H clique-cluster-ramsey-multiplicity\n    hills eval <submission> -H clique-cluster-ramsey-multiplicity --final\n\n## A realistic week of work\n\nThis is an ambitious research sprint, not a guaranteed seven-day solution. The design supports independent work on cluster weights and refinements, Cayley/symmetry-based templates, local edge changes, and exact certificate/formalization checks. The published search work and seed make reproduction feasible without rediscovering the whole field. Breaking B* is the stretch goal; a useful week can also yield a reviewed structural lemma or reusable formalization, but those contributions do not automatically receive this construction hill's success flag.\n\nA suggested plan is to reproduce the published seed first; implement incremental counts and test new cluster constructions next; then independently certify the strongest result and document the exact new-work delta. Copying or rechecking a published construction earns no new open-problem credit. Known work may be eligible for the competition's separate formalization category if its formalization is genuinely new and approved.\n\n## Fixed rules and trust boundary\n\n- At most 1024 blocks, weights 1..65535, and a solution.json of at most 4 MiB. These are evaluator resource limits, not hypotheses of the parent problem.\n- Verification has a 480-second internal limit and 600-second watchdog. Resource failure is not a mathematical rejection of the construction.\n- The evaluator reads solution.json only and never executes submission code. Other files may contain search code, proof notes, provenance, or formal artifacts; they do not alter the numeric score.\n- Duplicate keys, unknown JSON fields, nonintegral weights, asymmetric matrices, and malformed bit strings are rejected.\n- The reference, certificate language, resource limits, and scoring formula are fixed for this version. Existing climbs remain on their original version after any later update.\n- The Python checker and mathematical lifting argument are the computational trust boundary. Passing is not a claim of Lean/Coq verification or competition admission. Under the OpenMath handbook, score-bearing claims additionally require the approved pinned checker/certificate protocol and mathematical review. See LIFTING.md and SOURCES.md.\n",
+    "metrics": [
+      {
+        "name": "reference_beaten",
+        "direction": "max"
+      },
+      {
+        "name": "density_ppt",
+        "direction": "min"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "d30eba780f9526ad4b8c3b6c57c96632cb5b0311",
+      "message": "first version",
+      "version": "1.0.0",
+      "commit": "a97b93c118b29df95ed4986c33a78a658d3f2989",
+      "committed_at": "2026-09-19T19:13:01.025670+00:00",
+      "bundle_size": 71680
+    }
+  ],
+  "projects": [
+    {
+      "slug": "ottogin/clique-cluster-ramsey-multiplicity-attempt-1",
+      "name": "Clique Cluster Ramsey Multiplicity attempt 1",
+      "owner_id": "user_3BpCoBoFtO5YZk0UmUeQFMGZ1su",
+      "tree_hash": "d30eba780f9526ad4b8c3b6c57c96632cb5b0311",
+      "status": "paused"
+    }
+  ],
+  "is_owner": false,
+  "star_count": 1,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "clique-cluster-ramsey-multiplicity-fork",
+  "version_tree_hash": "d30eba780f9526ad4b8c3b6c57c96632cb5b0311",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "LIFTING.md",
+      "path": "LIFTING.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "SOURCES.md",
+      "path": "SOURCES.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/baseline/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "dir",
+      "name": "published_cayley_768",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "SOURCE.md",
+      "path": "examples/published_cayley_768/SOURCE.md",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/published_cayley_768/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: clique-cluster-ramsey-multiplicity\nversion: 1.0.0\nmetrics:\n  - {name: reference_beaten, direction: max}\n  - {name: density_ppt, direction: min}\nwatchdog_timeout_s: 600\n",
+  "error": null,
+  "is_image": false
+}

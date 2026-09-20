@@ -1,0 +1,13 @@
+spec_version: 2
+name: shakespeare
+version: 0.1.0
+
+# Model inference on a CPU slice of the validation split; generous cap for
+# slow pure-python models.
+watchdog_timeout_s: 900
+
+metrics:
+  - {name: bpc, direction: min}
+
+params:
+  eval_chars: {type: int, default: 8000, min: 1000, max: 55000}

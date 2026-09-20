@@ -1,0 +1,14 @@
+spec_version: 2
+name: kobon-triangles
+version: 0.1.0
+metrics:
+  - {name: triangles, direction: max}
+watchdog_timeout_s: 120
+params:
+  n:
+    type: int
+    default: 18
+    min: 3
+    max: 100
+    help: "Required number of distinct straight lines; different n values are ranked separately."
+

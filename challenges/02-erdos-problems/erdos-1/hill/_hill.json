@@ -1,0 +1,153 @@
+{
+  "hill": {
+    "name": "erdos-1",
+    "slug": "ottogin/erdos-1",
+    "description": "Give a machine-checked Lean 4 proof of the theorem hill below (toolchain v4.33.1, checked against Mathlib inside the hill's image). The statement is fixed; you write only the proof after the :=.",
+    "tags": [],
+    "visibility": "public",
+    "owner_username": "ottogin",
+    "current_tree_hash": "42af607ff1df00f7f1c40d59c4b40edbc3e6ec7c"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "42af607ff1df00f7f1c40d59c4b40edbc3e6ec7c"
+  },
+  "describe": {
+    "hill": "erdos-1",
+    "version": "0.1.0",
+    "spec_version": 3,
+    "path": "/home/ec2-user/qkayv/data/hills/ottogin/erdos-1",
+    "tree_hash": "42af607ff1df00f7f1c40d59c4b40edbc3e6ec7c",
+    "commit": "d1abe2dfd68d4c79a8d27c3d0ee4a20b98b7683e",
+    "committed": true,
+    "watchdog_timeout_s": 1800,
+    "exclusive_device": null,
+    "params": {},
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H erdos-1 --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/solution.json",
+      "examples/baseline/solution.lean",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "statement.lean",
+      "tests/test_hill.py"
+    ],
+    "readme": "# Erd\u0151s Problem 1\n\n\n## Task\n\nGive a **machine-checked Lean 4 proof** of the theorem `hill` below (toolchain v4.33.1, checked against Mathlib inside the hill's image). The statement is fixed; you write only the proof after the `:=`.\n\nThis is an **open Erd\u0151s problem** \u2014 a research-level conjecture. Most are unsolved; a climber is not expected to solve it yet, and partial or related results are welcome as the field advances.\n\n## Submission format\n\nA submission is a directory containing:\n\n```\nsolution.lean    the proof (a term, or a `by` tactic block) that completes `theorem hill : \u2026 :=`\n```\n\nIt is appended to the fixed statement and to `#print axioms hill`, then checked with Lean. Do not restate the theorem or add imports; the statement's context (`import FormalConjecturesUtil` \u2192 Mathlib, definitions, namespace) is already in scope.\n\n## How it is scored\n\nThe proof counts only if it compiles, uses no `sorry`, and depends on no axioms beyond Lean and Mathlib's standard three (`propext`, `Classical.choice`, `Quot.sound`).\n\n| metric | direction | meaning |\n|---|---|---|\n| `proved` | max | 1 when the proof checks, else the attempt fails with the reason |\n\n\n## References\n\n- [erdosproblems.com/1](https://www.erdosproblems.com/1)\n\n\nFormalization from [google-deepmind/formal-conjectures](https://github.com/google-deepmind/formal-conjectures/blob/main/FormalConjectures/ErdosProblems/1.lean).\n",
+    "metrics": [
+      {
+        "name": "proved",
+        "direction": "max"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "42af607ff1df00f7f1c40d59c4b40edbc3e6ec7c",
+      "message": "import from formal-conjectures (Erd\u0151s problem)",
+      "version": "0.1.0",
+      "commit": "d1abe2dfd68d4c79a8d27c3d0ee4a20b98b7683e",
+      "committed_at": "2026-09-10T09:41:24.710098+00:00",
+      "bundle_size": 10240
+    }
+  ],
+  "projects": [],
+  "is_owner": false,
+  "star_count": 0,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "erdos-1-fork",
+  "version_tree_hash": "42af607ff1df00f7f1c40d59c4b40edbc3e6ec7c",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/baseline/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "solution.lean",
+      "path": "examples/baseline/solution.lean",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "statement.lean",
+      "path": "statement.lean",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 3\nname: erdos-1\nversion: 0.1.0\nwatchdog_timeout_s: 1800\nmetrics:\n  - name: proved\n    direction: max\nenvironment:\n  image: ghcr.io/ottogin/lean-mathlib@sha256:964547ad81e109c78545512867bae70b710c55d833078674878faad7de0ebb85\nparams: {}\n",
+  "error": null,
+  "is_image": false
+}

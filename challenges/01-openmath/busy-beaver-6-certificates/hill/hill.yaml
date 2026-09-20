@@ -1,0 +1,8 @@
+spec_version: 2
+name: busy-beaver-6-certificates
+version: 0.1.0
+metrics:
+  - {name: steps, direction: max}
+  - {name: ones, direction: max}
+  - {name: tape_span, direction: max}
+watchdog_timeout_s: 120

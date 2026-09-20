@@ -1,0 +1,11 @@
+{
+  "lock_version": 1,
+  "kind": "private",
+  "entries": [
+    {
+      "path": "private/val.txt",
+      "sha256": "c54f3753a4e6e3c3d1759212815a7caf826e68a33021b25312984400bed40a1f",
+      "size": 111540
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "hill": {
+    "name": "shakespeare",
+    "slug": "ottogin/shakespeare",
+    "description": "Predict the next character in Shakespeare's writing. The evaluator checks your model on held-out text. The score is bits per character; lower is better.",
+    "tags": [
+      "ml",
+      "nlp",
+      "demo"
+    ],
+    "visibility": "public",
+    "owner_username": "ottogin",
+    "current_tree_hash": "8a310570a3a6527c252e8f7b47d1b76cb419577a"
+  },
+  "current": {
+    "version": "0.1.0",
+    "tree_hash": "8a310570a3a6527c252e8f7b47d1b76cb419577a"
+  },
+  "describe": {
+    "hill": "shakespeare",
+    "version": "0.1.0",
+    "spec_version": 2,
+    "path": "/home/ec2-user/qkayv/data/hills/ottogin/shakespeare",
+    "tree_hash": "8a310570a3a6527c252e8f7b47d1b76cb419577a",
+    "commit": "638c85828eed98cf8d772140b3d8893374ecb345",
+    "committed": true,
+    "watchdog_timeout_s": 900,
+    "exclusive_device": null,
+    "params": {
+      "eval_chars": {
+        "type": "int",
+        "default": 8000,
+        "min": 1000,
+        "max": 55000
+      }
+    },
+    "submission": "a directory; see readme for its required contents",
+    "test_mode": "hills eval <dir> -H shakespeare --final",
+    "files": [
+      ".gitignore",
+      "README.md",
+      "assets/hero.svg",
+      "blobs.lock",
+      "eval.py",
+      "examples/baseline/counts.json",
+      "examples/baseline/model.py",
+      "examples/baseline/solution.json",
+      "hill.yaml",
+      "private.lock",
+      "pyproject.toml",
+      "tests/test_hill.py",
+      "train.txt",
+      "uv.lock"
+    ],
+    "readme": "# Shakespeare\n\nPredict the next character in Shakespeare's writing. The evaluator checks your model on held-out text. The score is bits per character; lower is better.\n\n**First run:** choose **Climb on AutoLab**. The starter runs on CPU. Official scoring needs private evaluation data that is omitted from the public local download.\n\n![Write like the Bard, one character at a time](assets/hero.svg)\n\n## Run the starter\n\nThe starter in `examples/baseline/` counts how often each character appears in\nthe allowed training text. It ignores the preceding text, so it is a simple\nstarting point rather than a strong language model. At the default settings it\nscores about **4.80666995 bpc**.\n\nOn AutoLab, click **Start a climb**, then **Climb on AutoLab**. Choose an agent\nmodel and either a connected CPU machine or **CPU only (small)**. Set a model\nbudget under **More options**. AutoLab copies `model.py` and `counts.json` into\nthe climb, so the starter can run without finding files outside its folder.\nRead the baseline result before reviewing changes. Pause the climb to stop.\n\nThe starter and evaluator use only Python's standard library. Python 3.11 or\nnewer is required, and no GPU is needed for this first run. Training a different\nmodel may need additional tools or compute.\n\n## Compute and cost\n\nThe agent model writes experiments; the compute runs them. The model budget covers model calls. Rented compute is billed separately. Pause the climb to stop experiments and release AutoLab rentals; your own connected machine remains yours to manage.\n\nBefore changing anything, open the baseline job and check for a passing score. **Nodes offline** means compute is disconnected, not that your solution failed.\n\n## Try a first change\n\nOn AutoLab, ask the agent to make this edit in your submission, then run one evaluation against the baseline.\n\nIn `model.py`, change `_SMOOTHING = 1.0` to `_SMOOTHING = 0.5`. Keep the counts\nunchanged and evaluate once more. Smoothing gives a little extra probability to\nrare characters. This is a small experiment in reading a score change; it does\nnot teach the model to use context. At the default settings this edit scores\nabout **4.80666742 bpc**, a very small improvement.\n\nNext, try a **bigram model**: count which characters follow each character in\n`train.txt`, then use the last character of the prefix to choose a distribution.\nKeep smoothing so unseen pairs still receive probability. Compare with your\nbaseline using the same evaluation settings.\n\n## What to submit\n\nSubmit a directory containing `model.py` with this function:\n\n```python\npredict_next(prefix: str) -> dict[str, float]\n```\n\nReturn a dict mapping each candidate character to its **natural-log probability**.\nFor example, probability `0.5` is written as `math.log(0.5)`, about `-0.6931`,\nnot as `0.5`. Returned values must be finite and no greater than zero; the\nprobabilities must add up to at most one. Missing characters receive the floor\npenalty rather than a free pass.\n\nThe evaluator calls the function with the text seen so far: first an empty\nprefix, then one character more on each call. It never passes the next character\nas an argument. You can keep incremental state to avoid rescanning the prefix.\n\nYou may change the model, train offline, and ship learned tables or weights.\nModel inference must use only Python's standard library. Load packaged assets\nrelative to `model.py`, as the starter does with `counts.json`.\n\n## Training data and local work\n\nThe first 90% of the corpus is the public `train.txt` in this hill. Use only that\ntext for training. The starter's packaged counts were computed from it. Keep\nany new training code and model assets in your own workspace, leaving the hill's\nevaluator and data unchanged.\n\n**Use AutoLab for scored runs with the public version.** The public download\nomits `private/val.txt`, which official scoring requires. You can develop a model\nlocally using `train.txt`, but that download alone cannot run the official\nevaluation. A separate public practice evaluation is not provided yet.\n\nIf you have an authorized complete hill bundle, the local starter command is:\n\n```sh\ncp -R .autolab/hills/shakespeare/examples/baseline ./my-model\nhills eval ./my-model -H shakespeare -o baseline.json\n```\n\nRun this from the project folder containing `.autolab/`, using a fresh `my-model`\nfolder. Local results are not automatically added to AutoLab's leaderboard.\n\n## How scoring works\n\nThe evaluator measures the average negative log probability assigned to the\ncharacters that actually occur, converted to base two. The metric is **`bpc`**;\nlower is better. A missing or zero-probability character is scored with a floor\nof `1e-8`. The result includes `details.chars_scored`.\n\nInvalid distributions fail with an explanation in `details.error`. A valid\nmodel can still score badly: always predicting one character confidently does\nnot make its other predictions correct.\n\n| Parameter | Default | Meaning |\n| --- | --- | --- |\n| `eval_chars` | 8000 | Maximum held-out characters scored per run |\n\nUse the same character count when comparing attempts. `--final` scores a\ndifferent half of the held-out text and records a separate comparison group.\nKeep reports unedited; `hills verify` checks their signatures with the matching\nsigning key.\n\n## Trust\n\nThis is a cooperative learning exercise. Train only on `train.txt`; do not read\nor reconstruct held-out text from elsewhere. The evaluator checks the prediction\ninterface and distributions, but it is not an isolation boundary: on AutoLab,\nsubmission code and evaluation currently run as the same operating-system user.\n\n## If the first run fails\n\n- **Missing held-out data on your laptop:** the public download cannot run official scoring. Use **Climb on AutoLab**; do not try to obtain or recreate the private text.\n- **Missing `counts.json`:** copy the whole starter folder, not just `model.py`.\n- **Invalid probabilities:** return natural-log probabilities. For probability 0.5, use `math.log(0.5)`; check that the probabilities sum to at most one.\n\nThe score is in bits per character even though the function returns natural logs. Compare the same `eval_chars` and evaluation mode; lower is better.\n\n## Versions and comparisons\n\nA climb stays on the hill version selected when it was created. To try a newly published version, start a new climb from the hill page. Old results stay with their original version, including when a new version only changes this README.\n",
+    "metrics": [
+      {
+        "name": "bpc",
+        "direction": "min"
+      }
+    ]
+  },
+  "versions": [
+    {
+      "tree_hash": "8a310570a3a6527c252e8f7b47d1b76cb419577a",
+      "message": "Clarify starter workflow, compute, scoring and troubleshooting",
+      "version": "0.1.0",
+      "commit": "638c85828eed98cf8d772140b3d8893374ecb345",
+      "committed_at": "2026-09-10T05:36:41.108813+00:00",
+      "bundle_size": 532480
+    },
+    {
+      "tree_hash": "e8c205196f2e66c542d7c928e2d522fae780573f",
+      "message": "Package the Shakespeare starter and clarify its first run",
+      "version": "0.1.0",
+      "commit": "acef60d2bb88837d39da478aaad1f09d0d6b2a92",
+      "committed_at": "2026-09-10T00:59:20.784583+00:00",
+      "bundle_size": 532480
+    },
+    {
+      "tree_hash": "ab0e9c16312971ad363ff88ba0bf476ea88411a5",
+      "message": "align eval_chars default; document the cooperative-trust assumption",
+      "version": "0.1.0",
+      "commit": "2de42ef17236a0cc347565baf1fddfbd75ca6aaf",
+      "committed_at": "2026-09-04T23:25:09.481684+00:00",
+      "bundle_size": 532480
+    }
+  ],
+  "projects": [
+    {
+      "slug": "hamidrezakmk/shakespeare-attempt-1",
+      "name": "Shakespeare attempt 1",
+      "owner_id": "user_3Brf7FpktvGxrYtqxsxG7yPNyOP",
+      "tree_hash": "8a310570a3a6527c252e8f7b47d1b76cb419577a",
+      "status": "blocked"
+    }
+  ],
+  "is_owner": false,
+  "star_count": 2,
+  "starred": false,
+  "deadline": null,
+  "fork_suggestion": "shakespeare-fork",
+  "version_tree_hash": "8a310570a3a6527c252e8f7b47d1b76cb419577a",
+  "tree_rows": [
+    {
+      "kind": "file",
+      "name": ".gitignore",
+      "path": ".gitignore",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "README.md",
+      "path": "README.md",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "assets",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "hero.svg",
+      "path": "assets/hero.svg",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "blobs.lock",
+      "path": "blobs.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "eval.py",
+      "path": "eval.py",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "examples",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "baseline",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "counts.json",
+      "path": "examples/baseline/counts.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "model.py",
+      "path": "examples/baseline/model.py",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "solution.json",
+      "path": "examples/baseline/solution.json",
+      "depth": 2
+    },
+    {
+      "kind": "file",
+      "name": "hill.yaml",
+      "path": "hill.yaml",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "private.lock",
+      "path": "private.lock",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "pyproject.toml",
+      "path": "pyproject.toml",
+      "depth": 0
+    },
+    {
+      "kind": "dir",
+      "name": "tests",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "test_hill.py",
+      "path": "tests/test_hill.py",
+      "depth": 1
+    },
+    {
+      "kind": "file",
+      "name": "train.txt",
+      "path": "train.txt",
+      "depth": 0
+    },
+    {
+      "kind": "file",
+      "name": "uv.lock",
+      "path": "uv.lock",
+      "depth": 0
+    }
+  ],
+  "path": "hill.yaml",
+  "content": "spec_version: 2\nname: shakespeare\nversion: 0.1.0\n\n# Model inference on a CPU slice of the validation split; generous cap for\n# slow pure-python models.\nwatchdog_timeout_s: 900\n\nmetrics:\n  - {name: bpc, direction: min}\n\nparams:\n  eval_chars: {type: int, default: 8000, min: 1000, max: 55000}\n",
+  "error": null,
+  "is_image": false
+}
